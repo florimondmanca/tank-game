@@ -30,7 +30,6 @@ import src_Tank as Tank_class
 import src_Utils as Utils
 from src.bullet_cursor import Cursor
 from src_AI_Player import *
-from src_Walls import *
 from src_Level_Loop import main
 from src_Importation import get_level
 from src_Level_Selection import level_selection_menu

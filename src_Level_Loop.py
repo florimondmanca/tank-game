@@ -302,12 +302,12 @@ def main(n, custom=False, start=False, from_selection=False):
                             blt = player.create_bullet(path, pos)
                             player.bullets.add(blt)
                             bullets_group.add(blt)
-                        if event.type == pygame.QUIT:
-                            RUNNING = 0
-                            pygame.mixer.music.fadeout(200)
-                            clock.tick(5)
-                            pygame.quit()
-                            return False
+                    elif event.type == pygame.QUIT:
+                        RUNNING = 0
+                        pygame.mixer.music.fadeout(200)
+                        clock.tick(5)
+                        pygame.quit()
+                        return False
                 # 2/ On gère les déplacements du player
                 keys = pygame.key.get_pressed()
                 right = keys[pygame.K_RIGHT] or keys[pygame.K_d]
