@@ -1,20 +1,20 @@
-# Tank Game:
-# A game with tanks and stuff.
-#
-# by Erkalys & Florimond Manca
-#
-# Defining AI and Player classes
+"""
+Tank Game: A game with tanks and stuff.
+
+by Erkalys & Florimond Manca
+
+Defining AI and Player classes
+"""
 
 # Imports
 
 import pygame
-from pygame.locals import *
 import math
 import os
 from queue import PriorityQueue  # Priority Queue for A* algorithm
 from random import randint
-from src_Tank import *
-from src_Utils import *
+from src_Tank import Tank
+from src import utils
 
 path = os.getcwd()
 join = os.path.join
@@ -23,13 +23,13 @@ join = os.path.join
 
 
 def plussify(cls):
-    """plussify(tank_cls)
-
-    returns the tank_clsPlus plussified version of tank_cls.
+    """Return the plussified version of tank_cls.
 
     Example:
-    BluePlusAI = plussify(BlueAI)"""
+    BluePlusAI = plussify(BlueAI)
+    """
     class plussified_class(cls, YellowPlusAI):
+
         def __init__(self, *args, **kwargs):
             cls.__init__(self, *args, **kwargs)
             self.updater_class = YellowPlusAI
@@ -37,20 +37,19 @@ def plussify(cls):
 
 
 class Player(Tank):
-    """Player: the tank controlled by the player.
-    Inherits from class Tank."""
+    """Player: the tank controlled by the player."""
 
     def __init__(self, path, tank_name, canon_name, pos):
         Tank.__init__(self, path, tank_name, canon_name, pos)
         self.score = 0    # player's score
         self.firesound = pygame.mixer.Sound(
             join(path.replace("images", "music"), "shot_sound.wav"))
-        self.firesound.set_volume(get_volumes()[1])
+        self.firesound.set_volume(utils.get_volumes()[1])
 
 
 class YellowAI(Tank):
-    """YellowAI: A still AI that shoots the player on sight.
-    Inherits from class Tank"""
+    """YellowAI: A still AI that shoots the player on sight."""
+
     def __init__(self, path, tank_name, canon_name, pos, target_pos):
         Tank.__init__(self, path, tank_name, canon_name, pos, target_pos)
         # center the canon on the player by hand
@@ -60,7 +59,7 @@ class YellowAI(Tank):
         self.init_trigger()
         chemin = join(path.replace("images", "music"), "shot_sound.wav")
         self.firesound = pygame.mixer.Sound(chemin)
-        v = get_volumes()[1]
+        v = utils.get_volumes()[1]
         self.firesound.set_volume(v)
 
     def spot_player(self, path, target_pos, walls_group):
@@ -83,7 +82,7 @@ class YellowAI(Tank):
         self.time_trigger = randint(100, 300)
 
     def generate_new_bullets(self, path, target_pos):
-        """Generate only one bullet"""
+        """Generate only one bullet."""
         return self.create_bullet(path, target_pos)
 
     def update(self, path, target_pos, walls_group, pits_group,
@@ -105,18 +104,20 @@ class YellowAI(Tank):
 
 
 class YellowPlusAI(YellowAI):
-    """YellowPlusAI
+    """YellowPlusAI.
+
     A still AI that shoots the player on sight with 3 bullets at a time.
-    Inherits from class Tank"""
+    """
 
     def __init__(self, path, tank_name, canon_name, pos, target_pos):
         YellowAI.__init__(self, path, tank_name, canon_name, pos, target_pos)
 
     def generate_new_bullets(self, path, target_pos):
-        """Generates three bullets:
-            bullet_1 goes towards target_pos;
-            bullet_2 a bit over it;
-            bullet_3 a bit under it
+        """Generate three bullets.
+
+        bullet_1 goes towards target_pos;
+        bullet_2 a bit over it;
+        bullet_3 a bit under it
         """
         delta = 12  # angular gap in degrees
         bullet_1 = self.create_bullet(path, target_pos)
@@ -132,9 +133,10 @@ class YellowPlusAI(YellowAI):
 
 
 class BlueAI(YellowAI):
-    """BlueAI
-    An AI that moves along a pre-defined path and shoots the player on sight.
-    Inherits from class YellowAI."""
+    """An AI that moves along a pre-defined path.
+
+    Shoots the player on sight.
+    """
 
     def __init__(self, path, tank_name, canon_name, pos,
                  target_pos, points_list):
@@ -193,100 +195,128 @@ BluePlusAI = plussify(BlueAI)
 
 
 class PurpleAI(BlueAI):
-    """PurpleAI : An AI that moves along a pre-defined path and shoots the player on sight. A certain number of shots (3) are needed to kill it.
-    Inherits from class BlueAI."""
-    def __init__(self, path, tank_name, canon_name, pos, target_pos, points_list):
-        BlueAI.__init__(self, path, tank_name, canon_name, pos, target_pos, points_list)
+    """An AI that moves along a pre-defined path.
+
+    Shoots the player on sight.
+    A certain number of shots (3) are needed to kill it.
+    """
+
+    def __init__(self, path, tank_name, canon_name, pos, target_pos,
+                 points_list):
+        BlueAI.__init__(self, path, tank_name, canon_name, pos,
+                        target_pos, points_list)
         self.max_shots = 3
         self.n_shots = 0
-        chemin = path.replace("images","music")
-        v = get_volumes()[1]
-        self.destroyedSound = pygame.mixer.Sound(join(chemin, "destroyed_sound.wav"))
+        chemin = path.replace("images", "music")
+        v = utils.get_volumes()[1]
+        self.destroyedSound = pygame.mixer.Sound(join(chemin,
+                                                      "destroyed_sound.wav"))
         self.destroyedSound.set_volume(v)
         self.firesound = pygame.mixer.Sound(join(chemin, "shot_sound.wav"))
         self.firesound.set_volume(v)
         self.updater_class = YellowAI
-        
-    def update(self, path, target_pos, walls_group, pits_group, bullets_group, in_menu=False):
+
+    def update(self, path, target_pos, walls_group, pits_group, bullets_group,
+               in_menu=False):
         if not in_menu:
             # deal with the path the AI must follow
             self.basic_move(path, target_pos)
             # test collisions with other bullets
-            collided = pygame.sprite.spritecollide(self.body, bullets_group, False)
-            if collided: # the AI was shot by a bullet
+            collided = pygame.sprite.spritecollide(self.body,
+                                                   bullets_group, False)
+            if collided:  # the AI was shot by a bullet
                 for bullet in collided:
-                      bullet.kill()
+                    bullet.kill()
                 self.destroyedSound.play()
                 self.n_shots += 1
                 if self.n_shots == self.max_shots:
-                     self.alive = False
+                    self.alive = False
                 else:
-                    image_path = join(path,"images")
-                    self.body.image = load_image(image_path, "tank_corps_purple_dmg{}.png".format(self.n_shots))[0]
+                    image_path = join(path, "images")
+                    self.body.image = utils.load_image(
+                        image_path,
+                        "tank_corps_purple_dmg{}.png".format(self.n_shots))[0]
                     self.body.imageBase = self.body.image
-        return self.updater_class.update(self, path, target_pos, walls_group, pits_group, bullets_group, in_menu)
+        return self.updater_class.update(self, path, target_pos, walls_group,
+                                         pits_group, bullets_group, in_menu)
 
 
 PurplePlusAI = plussify(PurpleAI)
 
 
 class RedAI(YellowAI):
-    """RedAI : An AI that moves towards the player on a dynamically defined path and shoots at the player on sight.
-    Inherits from class YellowAI."""
-    def __init__(self, path, tank_name, canon_name, pos, target_pos) :
+    """An AI that moves towards the player on a dynamically defined path.
+
+    Shoots at the player on sight.
+    """
+
+    def __init__(self, path, tank_name, canon_name, pos, target_pos):
         YellowAI. __init__(self, path, tank_name, canon_name, pos, target_pos)
         self.points_list = []
         self.path_timer = 0
         self.path_timer_trigger = 200
         (x, y) = pos
-        self.case = (x//32, y//32)
+        self.case = (x // 32, y // 32)
         self.updater_class = YellowAI
-    
+
     def get_new_path(self, target_pos, walls_group, pits_group):
-        """get_new_path: A* algorithm. The Red AI finds the shortest path to get to the 'target_pos' position (generally the player's position)
+        """A* algorithm.
+
+        The Red AI finds the shortest path to get to the 'target_pos'
+        position (generally the player's position).
         """
         # get initial and goal positions
-        (x_target, y_target) = target_pos # The target's position
-        init_pos = self.case # The initial position
-        goal_pos = (x_target//32, y_target//32) # The target's cell
+        (x_target, y_target) = target_pos  # The target's position
+        init_pos = self.case  # The initial position
+        goal_pos = (x_target // 32, y_target // 32)  # The target's cell
 
-        get_default_dict = lambda default_value: dict(((i, j), default_value) for i in range(32) for j in range(21))
+        def get_default_dict(default_value):
+            return {
+                (i, j): default_value for i in range(32) for j in range(21)
+            }
 
         # declare data containers
         obstacles = get_default_dict(True)
         seen = get_default_dict(False)
-        distance_matrix = get_default_dict(float("inf"))  # distance_matrix[i, j]: shortest found distance from initial postion to (i, j)
-        shortest_path = []  # the shortest path to get to the target's position in terms of cells
-        parent_positions = get_default_dict((-1, -1))  # parent_positions[i, j] : (i, j)'s neighbor on the shortest pass
+        # distance_matrix[i, j]:
+        # shortest found distance from initial postion to (i, j)
+        distance_matrix = get_default_dict(float("inf"))
+        shortest_path = []
+        # ^the shortest path to get to the target's position in terms of cells
+        # parent_positions[i, j] : (i, j)'s neighbor on the shortest pass
+        parent_positions = get_default_dict((-1, -1))
         queue_prio = PriorityQueue()
 
         # initialize data containers
-        for wall in walls_group : # Fill the matrix with walls ...
+        for wall in walls_group:  # Fill the matrix with walls ...
             obstacles[wall.pos] = False
-        for pit in pits_group : # ... and pits
+        for pit in pits_group:  # ... and pits
             obstacles[pit.pos] = False
-        distance_matrix[init_pos] = 0  # Distance from start to start is obviously 0
+        distance_matrix[init_pos] = 0
+        # ^Distance from start to start is obviously 0
         queue_prio.put((0, init_pos))
 
         # reach out for the goal position
         while not seen[goal_pos]:
             priority, x = queue_prio.get()
             if not seen[x]:
-                for y in get_neighbors(obstacles, x):
-                    new_distance = distance_matrix[x] + heuristic(goal_pos, y)
+                for y in utils.get_neighbors(obstacles, x):
+                    new_distance = (distance_matrix[x] +
+                                    utils.heuristic(goal_pos, y))
                     if not seen[y] and new_distance < distance_matrix[y]:
                         queue_prio.put((new_distance, y))
                         distance_matrix[y] = new_distance
                         parent_positions[y] = x
                 seen[x] = True
-        
+
         # fallback to the initial position
         while goal_pos != init_pos:
             shortest_path.append(goal_pos)
             goal_pos = parent_positions[goal_pos]
-        shortest_path = clean(shortest_path)
-        shortest_path.reverse()  # shortest_path was (goal -> init) and we want (init -> goal)
-        return [(32*i + 16, 32*j + 16) for i, j in shortest_path]
+        shortest_path = utils.clean(shortest_path)
+        shortest_path.reverse()
+        # ^shortest_path was (goal -> init) and we want (init -> goal)
+        return [(32 * i + 16, 32 * j + 16) for i, j in shortest_path]
 
     def basic_move(self, path, target_pos):
         self_x, self_y = self.body.rect.center
@@ -295,63 +325,83 @@ class RedAI(YellowAI):
         if abs(self_x - goal_x) > v or abs(self_y - goal_y) > v:
             # we're still not at the goal point
             move_x, move_y = self.body.movepos
-            self.body.stopvertical() # always move on x first.
+            self.body.stopvertical()  # always move on x first.
             if self_x < goal_x - v:
                 self.body.moveright()
                 self.body.goal_angle = 0
-            elif self_x > goal_x + v :
+            elif self_x > goal_x + v:
                 self.body.moveleft()
                 self.body.goal_angle = 180
             else:
-                self.body.stophorizontal() # on bouge ensuite en ordonnée
-                if self_y < goal_y - v :
+                self.body.stophorizontal()  # on bouge ensuite en ordonnée
+                if self_y < goal_y - v:
                     self.body.movedown()
                     self.body.goal_angle = -90
-                elif self_y > goal_y + v :
+                elif self_y > goal_y + v:
                     self.body.moveup()
                     self.body.goal_angle = 90
-        
-        # on est arrivé au point. On se rend donc au point suivant 
-        else : 
+
+        # on est arrivé au point. On se rend donc au point suivant
+        else:
             self.body.stop()
-            self.points_list.pop(0) #on est arrivé, on enlève le point
-        self.case = (self_x//32, self_y//32)
+            self.points_list.pop(0)  # on est arrivé, on enlève le point
+        self.case = (self_x // 32, self_y // 32)
         self.path_timer += 1
 
-    def update(self, path, target_pos, walls_group, pits_group, bullets_group, in_menu=False):
+    def update(self, path, target_pos, walls_group, pits_group, bullets_group,
+               in_menu=False):
         if not in_menu:
             if not self.points_list:
-                self.points_list = self.get_new_path(target_pos, walls_group, pits_group)
-            elif self.path_timer == self.path_timer_trigger: # time to compute a new path
+                self.points_list = self.get_new_path(target_pos, walls_group,
+                                                     pits_group)
+            elif self.path_timer == self.path_timer_trigger:
+                # time to compute a new path
                 self.path_timer = 0
-                self.points_list = self.get_new_path(target_pos, walls_group, pits_group)
+                self.points_list = self.get_new_path(target_pos, walls_group,
+                                                     pits_group)
             self.basic_move(path, target_pos)
-        return self.updater_class.update(self, path, target_pos, walls_group, pits_group, bullets_group, in_menu)
+        return self.updater_class.update(self, path, target_pos, walls_group,
+                                         pits_group, bullets_group, in_menu)
+
 
 RedPlusAI = plussify(RedAI)
 
 
 class SpawnedAI(RedAI):
-    """SpawnedAI : An AI that has been generated by a Spawner, that moves towards the player on a dynamically defined path and shoots at the player on sight.
-    Inherits from class RedAI."""
+    """SpawnedAI : An AI that has been generated by a Spawner.
+
+    Moves towards the player on a dynamically defined path.
+    Shoots at the player on sight.
+    """
+
     def __init__(self, path, tank_name, canon_name, pos, target_pos, spawner):
         RedAI.__init__(self, path, tank_name, canon_name, pos, target_pos)
-        self.id  = spawner  # the spawner which the AI belongs to
+        self.id = spawner  # the spawner which the AI belongs to
 
 
 class SpawnedPlusAI(RedPlusAI):
-    """SpawnedPlusAI : An AI that has been generated by a Spawner, that moves towards the player on a dynamically defined path and shoots at the player on sight 3 bullets at a time.
-    Inherits from class RedPlusAI."""
+    """SpawnedPlusAI : An AI that has been generated by a Spawner.
+
+    Moves towards the player on a dynamically defined path.
+    Shoots at the player on sight 3 bullets at a time.
+    """
+
     def __init__(self, path, tank_name, canon_name, pos, target_pos, spawner):
         RedPlusAI.__init__(self, path, tank_name, canon_name, pos, target_pos)
-        self.id  = spawner  # the spawner which the AI belongs to
-        
+        self.id = spawner  # the spawner which the AI belongs to
+
 
 class Spawner(pygame.sprite.Sprite):
-    """Spawner : An AI that generates RedAI's. A single shot is enough to kill it."""
-    def __init__(self, path, sprite_name, pos, spawned_body_name="tank_corps_spawned.png", spawned_canon_name="canon_spawned.png"):
+    """Spawner : An AI that generates RedAI's.
+
+    A single shot is enough to kill it.
+    """
+
+    def __init__(self, path, sprite_name, pos,
+                 spawned_body_name="tank_corps_spawned.png",
+                 spawned_canon_name="canon_spawned.png"):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_image(path, sprite_name)
+        self.image, self.rect = utils.load_image(path, sprite_name)
         self.imageBase = self.image
         self.area = pygame.display.get_surface().get_rect()
         self.rect.center = pos
@@ -362,12 +412,13 @@ class Spawner(pygame.sprite.Sprite):
         self.time_counter = 300
         self.time_trigger = 0
         self.alive = True
-        self.spawned = False  # True if an AI spawned by this spawner is still alive
+        self.spawned = False
+        # ^True if an AI spawned by this spawner is still alive
         self.destroyedSound = pygame.mixer.Sound(
             join(path.replace("images", "music"), "destroyed_sound.wav"))
-        self.destroyedSound.set_volume(get_volumes()[1])
+        self.destroyedSound.set_volume(utils.get_volumes()[1])
         self.init_trigger()
-    
+
     def init_trigger(self):
         self.time_trigger = randint(100, 300)
 
@@ -381,7 +432,10 @@ class Spawner(pygame.sprite.Sprite):
                     self.spawned = True
                     pos = self.rect.center
                     image_path = join(path, "images")
-                    generated_AI = SpawnedAI(image_path, self.spawned_body_name, self.spawned_canon_name, pos, target_pos, self)
+                    generated_AI = SpawnedAI(
+                        image_path, self.spawned_body_name,
+                        self.spawned_canon_name, pos,
+                        target_pos, self)
                 else:
                     self.time_counter += 1
             collided = pygame.sprite.spritecollide(self, bullets_group, False)
@@ -391,22 +445,34 @@ class Spawner(pygame.sprite.Sprite):
                     bullet.kill()
                 self.n_shots += 1
                 if self.n_shots == self.max_shots:
-                    self.alive = False 
+                    self.alive = False
                 else:
-                    self.image = load_image(path, join("images", "spawner_dmg{}.png".format(self.n_shots)))[0]                      
+                    self.image = utils.load_image(path, join(
+                        "images", "spawner_dmg{}.png".format(self.n_shots)))[0]
         screen = pygame.display.get_surface()
         screen.blit(self.image, self.rect)
         return generated_AI
 
 
-class SpawnerPlus(Spawner) :
-    """SpawnerPlus : An AI that generates RedPlusAI's. 3 shots are needed to kill it."""
-    def __init__(self, path, sprite_name, pos, spawned_body_name="tank_corps_spawned.png", spawned_canon_name="canon_spawnedPlus.png"):
-        Spawner.__init__(self, path, sprite_name, pos, spawned_body_name, spawned_canon_name)
+class SpawnerPlus(Spawner):
+    """SpawnerPlus : An AI that generates RedPlusAI's.
+
+    3 shots are needed to kill it.
+    """
+
+    def __init__(self, path, sprite_name, pos,
+                 spawned_body_name="tank_corps_spawned.png",
+                 spawned_canon_name="canon_spawnedPlus.png"):
+        Spawner.__init__(self, path, sprite_name, pos, spawned_body_name,
+                         spawned_canon_name)
         self.max_shots = 3
 
 
-class IATurret: #TODO
-    """TurretAI : an AI that shoots bullets in all directions at regular intervals."""
-    def __init__(self, path, sprite_name, pos, target_pos) :
+class IATurret:  # TODO
+    """TurretAI.
+
+    An AI that shoots bullets in all directions at regular intervals.
+    """
+
+    def __init__(self, path, sprite_name, pos, target_pos):
         pass

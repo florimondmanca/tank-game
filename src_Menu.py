@@ -9,9 +9,6 @@
 # Imports
 
 import pygame
-from pygame.locals import *
-from pygame.font import *
-import math
 import sys
 import os
 join = os.path.join
@@ -26,27 +23,29 @@ MAIN_PATH = os.getcwd()
 if MAIN_PATH not in sys.path:
     sys.path.append(MAIN_PATH)
 
-import src_Tank as Tank_class
-import src_Utils as Utils
+from src import utils
 from src.bullet_cursor import Cursor
-from src_AI_Player import *
+from src_AI_Player import YellowAI, YellowPlusAI, BlueAI, BluePlusAI, RedAI, \
+    RedPlusAI, PurpleAI, PurplePlusAI
 from src_Level_Loop import main
 from src_Importation import get_level
 from src_Level_Selection import level_selection_menu
-from src_Options import *
+from src.options import options_menu
 import src_Level_Editor as Level_Editor
 
 
 def run_game():
     pygame.init()
-    Utils.update_music_menu()
-    clickSound = pygame.mixer.Sound(join(join(MAIN_PATH, "music"), "click_sound.wav"))
+    utils.update_music_menu()
+    clickSound = pygame.mixer.Sound(join(join(MAIN_PATH, "music"),
+                                         "click_sound.wav"))
     pygame.font.init()  # module de pygame qui gère le texte
 
-    size = Utils.get_size()
+    size = utils.get_size()
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Tank Game")
-    walls_group, pits_group, pos_joueur, pos_IA, blah = get_level(MAIN_PATH, -1)
+    walls_group, pits_group, pos_joueur, pos_IA, blah = get_level(
+        MAIN_PATH, -1)
     icone = pygame.image.load(join(join(MAIN_PATH, 'images'), 'tank.png'))
     pygame.display.set_icon(icone)
 
@@ -102,7 +101,7 @@ def run_game():
                                    element[1], pos_joueur, [])
             AI_group.append(purplep)
 
-    background = Utils.Background(join(MAIN_PATH, "images"), -1)
+    background = utils.Background(join(MAIN_PATH, "images"), -1)
     screen.blit(background.image, (0, 0))
 
     pygame.mouse.set_visible(False)
@@ -111,17 +110,18 @@ def run_game():
     clock = pygame.time.Clock()
     running = 1
 
-    font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
-    bigfont = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 72)
+    font = pygame.font.Font(join(MAIN_PATH, join("fonts", "BOMBARD.ttf")), 36)
+    bigfont = pygame.font.Font(join(MAIN_PATH,
+                                    join("fonts", "BOMBARD.ttf")), 72)
 
     title = bigfont.render("TANK GAME", 1, (30, 30, 30))
     titlepos = title.get_rect(centerx=512, centery=100)
 
-    start_game = Utils.Button("Start Game", font, 512, 200, (200, 0, 0))
-    level_select = Utils.Button("Level Selection", font, 512, 300, (200, 0, 0))
-    exit_game = Utils.Button("Exit Game", font, 512, 600, (200, 0, 0))
-    editor = Utils.Button("Level Editor",  font, 512, 400, (200, 0, 0))
-    options = Utils.Button("Options", font, 512, 500, (200, 0, 0))
+    start_game = utils.Button("Start Game", font, 512, 200, (200, 0, 0))
+    level_select = utils.Button("Level Selection", font, 512, 300, (200, 0, 0))
+    exit_game = utils.Button("Exit Game", font, 512, 600, (200, 0, 0))
+    editor = utils.Button("Level Editor", font, 512, 400, (200, 0, 0))
+    options = utils.Button("Options", font, 512, 500, (200, 0, 0))
 
     while running:
         clock.tick(60)  # on maximise le fps à 60
@@ -133,24 +133,24 @@ def run_game():
         level_select.update()
         curseur.update()
         options.update()
-        Utils.update_music_menu()
+        utils.update_music_menu()
 
         for AI_sprite in AI_group:
-            boulets = AI_sprite.update(MAIN_PATH, curseur.rect.center,
-                                       walls_group, pits_group, [], in_menu=True)
+            AI_sprite.update(MAIN_PATH, curseur.rect.center,
+                             walls_group, pits_group, [], in_menu=True)
 
         pygame.display.flip()
 
         for event in pygame.event.get():
             # if player wants to quit (using window buttons)
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 running = 0
                 pygame.mixer.music.fadeout(200)
                 clock.tick(5)
                 pygame.quit()
 
             # player clicked somewhere
-            elif event.type == MOUSEBUTTONDOWN and event.button == 1:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
 
                 # player clicked on "Exit Game"
                 if exit_game.highlighten:
@@ -194,6 +194,7 @@ def run_game():
                     clickSound.play()
                     if not options_menu():
                         return
+
 
 if __name__ == "__main__":
     run_game()

@@ -12,7 +12,7 @@ import pygame
 import sys
 import os
 
-import src_Utils as Utils
+from src import utils
 from src.bullet_cursor import Cursor
 from src_AI_Player import Player, YellowAI, YellowPlusAI, BlueAI, BluePlusAI, \
     RedAI, RedPlusAI, PurpleAI, PurplePlusAI, Spawner, SpawnerPlus
@@ -30,8 +30,8 @@ def pause(screen, player, background, walls_group, AI_group, bullets_group,
     global clickSound
     paused = True
     font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
-    resume = Utils.Button("Resume Game", font, 512, 200, (200, 0, 0))
-    exit = Utils.Button("Return to Menu", font, 512, 300, (200, 0, 0))
+    resume = utils.Button("Resume Game", font, 512, 200, (200, 0, 0))
+    exit = utils.Button("Return to Menu", font, 512, 300, (200, 0, 0))
 
     curseur_pause = Cursor(join(path, "images"))  # par un curseur/pointeur
     c = pygame.time.Clock()
@@ -89,14 +89,14 @@ def dead_menu(screen, player, background, walls_group, AI_group, bullets_group,
     global clickSound
     paused = True
     font1 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
-    recommencer = Utils.Button("Try Again", font1, 512, 220, (200, 0, 0))
-    quitter = Utils.Button("Return to Menu", font1, 512, 350, (200, 0, 0))
+    recommencer = utils.Button("Try Again", font1, 512, 220, (200, 0, 0))
+    quitter = utils.Button("Return to Menu", font1, 512, 350, (200, 0, 0))
     font2 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 50)
     you_died = font2.render("You died!", 1, (200, 0, 0))
     you_died_pos = you_died.get_rect(centerx=512, centery=150)
     curseur_pause = Cursor(join(path, "images"))  # par un curseur/pointeur
     c = pygame.time.Clock()
-    deadimg = Utils.load_image(join(path, 'images'), 'tank_destroyed.png')[0]
+    deadimg = utils.load_image(join(path, 'images'), 'tank_destroyed.png')[0]
 
     while paused:
         c.tick(60)
@@ -161,12 +161,12 @@ def main(n, custom=False, start=False, from_selection=False):
     walls_pits = pygame.sprite.Group()
     unlocked = get_unlocked()  # les niveaux disponibles
     font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
-    # recommencer = Utils.Button("Try again", font,
+    # recommencer = utils.Button("Try again", font,
     #                            512 - 200, 200, (200, 0, 0))
-    # quitter = Utils.Button("Back to menu", font, 512 + 200, 200, (200, 0, 0))
+    # quitter = utils.Button("Back to menu", font, 512 + 200, 200, (200, 0, 0))
     clickSound = pygame.mixer.Sound(join(join(path, "music"),
                                          "click_sound.wav"))
-    v = Utils.get_volumes()[0]
+    v = utils.get_volumes()[0]
 
     # Si on a lancé le niveau depuis le menu (pas de changement de musique
     # lors de l'enchainement de deux niveaux
@@ -188,7 +188,7 @@ def main(n, custom=False, start=False, from_selection=False):
     for elt in pits_group:
         walls_pits.add(elt)
 
-    background = Utils.Background(join(path, "images"), n, custom)
+    background = utils.Background(join(path, "images"), n, custom)
 
     pygame.font.init()
     font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 18)
@@ -373,7 +373,7 @@ def main(n, custom=False, start=False, from_selection=False):
                     else:
                         chemin = join(path, 'images')
                         (x, y) = IA.body.rect.center
-                        IA.body.image, IA.body.rect = Utils.load_image(
+                        IA.body.image, IA.body.rect = utils.load_image(
                             chemin, 'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
@@ -390,7 +390,7 @@ def main(n, custom=False, start=False, from_selection=False):
                     else:
                         chemin = join(path, 'images')
                         (x, y) = IA.body.rect.center
-                        IA.body.image, IA.body.rect = Utils.load_image(
+                        IA.body.image, IA.body.rect = utils.load_image(
                             chemin, 'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
@@ -406,7 +406,7 @@ def main(n, custom=False, start=False, from_selection=False):
                     else:
                         all_spawners.remove(spawner)
                         center = spawner.rect.center
-                        spawner.image, spawner.rect = Utils.load_image(
+                        spawner.image, spawner.rect = utils.load_image(
                             join(path, 'images'), 'spawner_destroyed.png')
                         spawner.rect.center = center
                         all_dead_spawners.append(spawner)

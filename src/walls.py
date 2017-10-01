@@ -10,7 +10,7 @@ Defining the decorative objects such as walls and pits.
 
 import pygame
 import os
-from src_Utils import load_image
+from src.utils import load_image
 join = os.path.join
 
 

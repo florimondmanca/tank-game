@@ -15,7 +15,7 @@ import math
 import sys
 import os
 import src_Tank as Tank_class
-import src_Utils as Utils
+from src import utils
 from src.bullet_cursor import Cursor
 from src_AI_Player import *
 from src_Level_Loop import main
@@ -36,9 +36,9 @@ def level_selection_menu():
     levels, either normal or custom ones."""
     # some initialization
     pygame.font.init()  # pygame module for managing fonts
-    size = Utils.get_size()
+    size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    background = Utils.Background(join(path, "images"), nlevel=-1)
+    background = utils.Background(join(path, "images"), nlevel=-1)
     screen.blit(background.image, (0, 0))
 
     # replace the mouse with a cursor
@@ -58,7 +58,7 @@ def level_selection_menu():
     title = font_big.render("Select a level", 1, (30, 30, 30))
     titlepos = title.get_rect(centerx=512, centery=50)
 
-    back = Utils.Button("Back", font_big, 512, 590, (200, 0, 0))
+    back = utils.Button("Back", font_big, 512, 590, (200, 0, 0))
     help_msg = font_medium.render(
         "You can only select levels you've unlocked. To unlock a level, beat all the previous ones.", 1, (69, 52, 16))
     msgpos = help_msg.get_rect(centerx=512, centery=620)
@@ -70,7 +70,7 @@ def level_selection_menu():
         if i > 500:
             i = 0
             j += 50
-        buttons.append(Utils.Button("#{}".format(n), font_buttons,
+        buttons.append(utils.Button("#{}".format(n), font_buttons,
                                     100 + j, 100 + i, (200, 0, 0)))
         i += 30
         n += 1
@@ -83,7 +83,7 @@ def level_selection_menu():
         if i > 500:
             i = 0
             j += 50
-        buttons.append(Utils.Button("#custom{}".format(m), font_buttons,
+        buttons.append(utils.Button("#custom{}".format(m), font_buttons,
                                     900 + j, 100 + i, (200, 0, 0)))
         i += 30
         m += 1
@@ -100,7 +100,7 @@ def level_selection_menu():
         button_update(buttons)
         curseur.update()
         # update the music (to keep it running if it reaches the end)
-        Utils.update_music_menu()
+        utils.update_music_menu()
         pygame.display.flip()
         # deal with the events
         for event in pygame.event.get():
