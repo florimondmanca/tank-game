@@ -30,10 +30,11 @@ class Body(pygame.sprite.Sprite):
         self.area = pygame.display.get_surface().get_rect()
         self.speed = 1
         self.rect.center = pos
-        self.movepos = [0, 0]    # moving speed right/left, up/down
-        self.angle = math.radians(0)   # initial angle of the body
-        self.goal_angle = 0            # initial goal angle of the body
-        self.rotation_step = math.radians(7.5)  #
+        self.move_x = 0
+        self.move_y = 0
+        self.angle = 0
+        self.goal_angle = 0
+        self.rotation_step = math.radians(7.5)
         self.path = path
 
     def _update_body_angle(self):
@@ -72,9 +73,8 @@ class Body(pygame.sprite.Sprite):
             walls_group = pygame.sprite.Group()
         self._update_body_angle()
         self._rotate_body_image()
-        move_x = self.movepos[0]
-        move_y = self.movepos[1]
         oldpos = self.rect
+        move_x, move_y = self.move_x, self.move_y
         self.rect = self.rect.move(move_x, move_y)
         collided_walls = pygame.sprite.spritecollide(
             self, walls_group, False, pygame.sprite.collide_rect)
@@ -83,41 +83,41 @@ class Body(pygame.sprite.Sprite):
             # find the direction to block
             for wall in collided_walls:
                 if wall.rect.collidepoint(self.rect.midright):
-                    if self.movepos[0] == 1:
+                    if self.move_x > 0:
                         move_x = 0
                 if wall.rect.collidepoint(self.rect.midleft):
-                    if self.movepos[0] == -1:
+                    if self.move_x < 0:
                         move_x = 0
                 if wall.rect.collidepoint(self.rect.midtop):
-                    if self.movepos[1] == -1:
+                    if self.move_y < 0:
                         move_y = 0
                 if wall.rect.collidepoint(self.rect.midbottom):
-                    if self.movepos[1] == 1:
+                    if self.move_y > 0:
                         move_y = 0
             self.rect = self.rect.move(move_x, move_y)
         screen = pygame.display.get_surface()
         screen.blit(self.image, self.rect)
 
     def moveright(self):
-        self.movepos[0] = self.speed
+        self.move_x = self.speed
 
     def moveleft(self):
-        self.movepos[0] = -self.speed
+        self.move_x = -self.speed
 
     def moveup(self):
-        self.movepos[1] = -self.speed
+        self.move_y = -self.speed
 
     def movedown(self):
-        self.movepos[1] = self.speed
+        self.move_y = self.speed
 
     def stophorizontal(self):
-        self.movepos[0] = 0
+        self.move_x = 0
 
     def stopvertical(self):
-        self.movepos[1] = 0
+        self.move_y = 0
 
     def stop(self):
-        self.movepos = [0, 0]
+        self.move_x = self.move_y = 0
 
     def bullet_angle(self, target_pos):
         """Compute the angle of trajectory for a new bullet.

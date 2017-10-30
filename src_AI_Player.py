@@ -155,7 +155,7 @@ class BlueAI(YellowAI):
             v = self.body.speed
             if abs(self_x - goal_x) > v or abs(self_y - goal_y) > v:
                 # we're still not at the goal point
-                move_x, move_y = self.body.movepos
+                move_x, move_y = self.body.move_x, self.body.move_y
                 self.body.stopvertical()  # always move on x first.
                 if self_x < goal_x - v:
                     self.body.moveright()
@@ -324,7 +324,7 @@ class RedAI(YellowAI):
         v = self.body.speed
         if abs(self_x - goal_x) > v or abs(self_y - goal_y) > v:
             # we're still not at the goal point
-            move_x, move_y = self.body.movepos
+            move_x, move_y = self.body.move_x, self.body.move_y
             self.body.stopvertical()  # always move on x first.
             if self_x < goal_x - v:
                 self.body.moveright()
