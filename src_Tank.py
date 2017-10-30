@@ -35,7 +35,6 @@ class Body(pygame.sprite.Sprite):
         self.angle = 0
         self.goal_angle = 0
         self.rotation_step = math.radians(7.5)
-        self.path = path
 
     def _update_body_angle(self):
         """Update the tank's body angle.
