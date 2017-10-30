@@ -19,16 +19,15 @@ from src.bullet_cursor import Cursor  # noqa: E402
 
 
 def options_menu():
-    """Options loop."""
+    """Loop for options menu."""
     pygame.font.init()
     size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    clickSound = pygame.mixer.Sound(join(join(path, "music"),
-                                         "click_sound.wav"))
-    background = utils.Background(join(path, "images"), -1)
+    clickSound = utils.load_sound("click_sound.wav")
+    background = utils.Background(-1)
     screen.blit(background.image, (0, 0))
     pygame.mouse.set_visible(False)
-    curseur = Cursor(join(path, "images"))
+    curseur = Cursor()
 
     clock = pygame.time.Clock()
     var = 1

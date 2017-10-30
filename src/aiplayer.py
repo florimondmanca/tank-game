@@ -39,28 +39,27 @@ def plussify(cls):
 class Player(Tank):
     """Player: the tank controlled by the player."""
 
-    def __init__(self, path, tank_name, canon_name, pos):
-        Tank.__init__(self, path, tank_name, canon_name, pos)
+    def __init__(self, pos):
+        Tank.__init__(self, pos)
         self.score = 0    # player's score
-        self.firesound = pygame.mixer.Sound(
-            join(path.replace("images", "music"), "shot_sound.wav"))
-        self.firesound.set_volume(utils.get_volumes()[1])
+        self.fire_sound.set_volume(utils.get_volumes()[1])
 
 
 class YellowAI(Tank):
     """YellowAI: A still AI that shoots the player on sight."""
 
-    def __init__(self, path, tank_name, canon_name, pos, target_pos):
-        Tank.__init__(self, path, tank_name, canon_name, pos, target_pos)
+    body_image_name = "tank_corps_yellow.png"
+    canon_image_name = "canon_yellow.png"
+
+    def __init__(self, pos, target_pos):
+        Tank.__init__(self, pos, target_pos)
         # center the canon on the player by hand
         self.canon.update(pos, target_pos)
         self.time_trigger = 0
         self.time_counter = 0
         self.init_trigger()
-        chemin = join(path.replace("images", "music"), "shot_sound.wav")
-        self.firesound = pygame.mixer.Sound(chemin)
         v = utils.get_volumes()[1]
-        self.firesound.set_volume(v)
+        self.fire_sound.set_volume(v)
 
     def spot_player(self, path, target_pos, walls_group):
         # Raycasting principle : shoot a virtual bullet. If it ends up on a
@@ -93,7 +92,7 @@ class YellowAI(Tank):
                 self.time_counter = 0
                 self.init_trigger()
                 if self.spot_player(path, target_pos, walls_group):
-                    self.firesound.play()
+                    self.fire_sound.play()
                     new_generated_bullets = self.generate_new_bullets(
                         path, target_pos)
                     new_bullets = pygame.sprite.Group(new_generated_bullets)
@@ -109,8 +108,8 @@ class YellowPlusAI(YellowAI):
     A still AI that shoots the player on sight with 3 bullets at a time.
     """
 
-    def __init__(self, path, tank_name, canon_name, pos, target_pos):
-        YellowAI.__init__(self, path, tank_name, canon_name, pos, target_pos)
+    body_image_name = "tank_corps_yellowPlus.png"
+    canon_image_name = "canon_yellowPlus.png"
 
     def generate_new_bullets(self, path, target_pos):
         """Generate three bullets.
@@ -138,14 +137,16 @@ class BlueAI(YellowAI):
     Shoots the player on sight.
     """
 
-    def __init__(self, path, tank_name, canon_name, pos,
-                 target_pos, points_list):
-        YellowAI.__init__(self, path, tank_name, canon_name, pos, target_pos)
+    body_image_name = "tank_corps_blue.png"
+    canon_image_name = "canon_blue.png"
+
+    def __init__(self, pos, target_pos, points_list):
+        YellowAI.__init__(self, pos, target_pos)
         self.points_list = points_list  # a list of tuples (x, y).
         # The AI will follow the list and go to the targets in
         # horizontal and vertical lines.
         self.step = 0  # the AI's step in its path.
-        self.updater_class = YellowAI
+        self.updater_class = YellowAI  # TODO change to super().update()
 
     def basic_move(self, path, target_pos):
         # moves the AI along its pre-defined path
@@ -192,6 +193,7 @@ class BlueAI(YellowAI):
 
 
 BluePlusAI = plussify(BlueAI)
+BluePlusAI.canon_image_name = "canon_bluePlus.png"
 
 
 class PurpleAI(BlueAI):
@@ -201,19 +203,18 @@ class PurpleAI(BlueAI):
     A certain number of shots (3) are needed to kill it.
     """
 
-    def __init__(self, path, tank_name, canon_name, pos, target_pos,
-                 points_list):
-        BlueAI.__init__(self, path, tank_name, canon_name, pos,
-                        target_pos, points_list)
+    body_image_name = "tank_corps_purple.png"
+    canon_image_name = "canon_purple.png"
+
+    def __init__(self, pos, target_pos, points_list):
+        BlueAI.__init__(self, pos, target_pos, points_list)
         self.max_shots = 3
         self.n_shots = 0
         chemin = path.replace("images", "music")
         v = utils.get_volumes()[1]
-        self.destroyedSound = pygame.mixer.Sound(join(chemin,
-                                                      "destroyed_sound.wav"))
+        self.destroyedSound = utils.load_sound("destroyed_sound.wav")
         self.destroyedSound.set_volume(v)
-        self.firesound = pygame.mixer.Sound(join(chemin, "shot_sound.wav"))
-        self.firesound.set_volume(v)
+        self.fire_sound.set_volume(v)
         self.updater_class = YellowAI
 
     def update(self, path, target_pos, walls_group, pits_group, bullets_group,
@@ -232,16 +233,16 @@ class PurpleAI(BlueAI):
                 if self.n_shots == self.max_shots:
                     self.alive = False
                 else:
-                    image_path = join(path, "images")
                     self.body.image = utils.load_image(
-                        image_path,
-                        "tank_corps_purple_dmg{}.png".format(self.n_shots))[0]
-                    self.body.imageBase = self.body.image
+                        "tank_corps_purple_dmg{}.png"
+                        .format(self.n_shots))[0]
+                    self.body.base_image = self.body.image
         return self.updater_class.update(self, path, target_pos, walls_group,
                                          pits_group, bullets_group, in_menu)
 
 
 PurplePlusAI = plussify(PurpleAI)
+PurplePlusAI.canon_image_name = "canon_purplePlus.png"
 
 
 class RedAI(YellowAI):
@@ -249,15 +250,17 @@ class RedAI(YellowAI):
 
     Shoots at the player on sight.
     """
+    body_image_name = "tank_corps_red.png"
+    canon_image_name = "canon_red.png"
 
-    def __init__(self, path, tank_name, canon_name, pos, target_pos):
-        YellowAI. __init__(self, path, tank_name, canon_name, pos, target_pos)
+    def __init__(self, pos, target_pos):
+        YellowAI. __init__(self, pos, target_pos)
         self.points_list = []
         self.path_timer = 0
         self.path_timer_trigger = 200
         (x, y) = pos
         self.case = (x // 32, y // 32)
-        self.updater_class = YellowAI
+        self.updater_class = YellowAI  # TODO super().update()
 
     def get_new_path(self, target_pos, walls_group, pits_group):
         """A* algorithm.
@@ -365,6 +368,7 @@ class RedAI(YellowAI):
 
 
 RedPlusAI = plussify(RedAI)
+RedPlusAI.canon_image_name = "canon_redPlus.png"
 
 
 class SpawnedAI(RedAI):
@@ -374,8 +378,8 @@ class SpawnedAI(RedAI):
     Shoots at the player on sight.
     """
 
-    def __init__(self, path, tank_name, canon_name, pos, target_pos, spawner):
-        RedAI.__init__(self, path, tank_name, canon_name, pos, target_pos)
+    def __init__(self, pos, target_pos, spawner):
+        RedAI.__init__(self, pos, target_pos)
         self.id = spawner  # the spawner which the AI belongs to
 
 
@@ -386,8 +390,8 @@ class SpawnedPlusAI(RedPlusAI):
     Shoots at the player on sight 3 bullets at a time.
     """
 
-    def __init__(self, path, tank_name, canon_name, pos, target_pos, spawner):
-        RedPlusAI.__init__(self, path, tank_name, canon_name, pos, target_pos)
+    def __init__(self, pos, target_pos, spawner):
+        RedPlusAI.__init__(self, pos, target_pos)
         self.id = spawner  # the spawner which the AI belongs to
 
 
@@ -397,12 +401,12 @@ class Spawner(pygame.sprite.Sprite):
     A single shot is enough to kill it.
     """
 
-    def __init__(self, path, sprite_name, pos,
+    def __init__(self, sprite_name, pos,
                  spawned_body_name="tank_corps_spawned.png",
                  spawned_canon_name="canon_spawned.png"):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image(path, sprite_name)
-        self.imageBase = self.image
+        self.image, self.rect = utils.load_image(sprite_name)
+        self.base_image = self.image
         self.area = pygame.display.get_surface().get_rect()
         self.rect.center = pos
         self.spawned_body_name = spawned_body_name
@@ -414,8 +418,7 @@ class Spawner(pygame.sprite.Sprite):
         self.alive = True
         self.spawned = False
         # ^True if an AI spawned by this spawner is still alive
-        self.destroyedSound = pygame.mixer.Sound(
-            join(path.replace("images", "music"), "destroyed_sound.wav"))
+        self.destroyedSound = utils.load_sound("destroyed_sound.wav")
         self.destroyedSound.set_volume(utils.get_volumes()[1])
         self.init_trigger()
 
@@ -447,8 +450,8 @@ class Spawner(pygame.sprite.Sprite):
                 if self.n_shots == self.max_shots:
                     self.alive = False
                 else:
-                    self.image = utils.load_image(path, join(
-                        "images", "spawner_dmg{}.png".format(self.n_shots)))[0]
+                    self.image = utils.load_image("spawner_dmg{}.png"
+                                                  .format(self.n_shots))[0]
         screen = pygame.display.get_surface()
         screen.blit(self.image, self.rect)
         return generated_AI

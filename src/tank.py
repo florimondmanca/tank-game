@@ -6,6 +6,7 @@ import math
 import os
 from src import utils
 from src.bullet_cursor import Bullet
+from . import settings
 
 path = os.getcwd()
 join = os.path.join
@@ -23,10 +24,10 @@ elif '/' in path:
 class Body(pygame.sprite.Sprite):
     """Body: the body of a tank."""
 
-    def __init__(self, path, tank_name, canon_name, pos):
+    def __init__(self, image_name, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image(path, tank_name)
-        self.imageBase = self.image
+        self.image, self.rect = utils.load_image(image_name)
+        self.base_image = self.image
         self.area = pygame.display.get_surface().get_rect()
         self.speed = 1
         self.rect.center = pos
@@ -63,7 +64,7 @@ class Body(pygame.sprite.Sprite):
         """Rotate the body's sprite according to self.angle."""
         center_rect = self.rect.center
         angle = math.degrees(self.angle)
-        self.image = pygame.transform.rotate(self.imageBase, angle)
+        self.image = pygame.transform.rotate(self.base_image, angle)
         self.rect = self.image.get_rect(center=center_rect)
 
     def update(self, walls_group=None):
@@ -134,10 +135,10 @@ class Body(pygame.sprite.Sprite):
 class Canon(pygame.sprite.Sprite):
     """Canon: the canon of a tank."""
 
-    def __init__(self, path, canon_name, pos, target_pos=None):
+    def __init__(self, image_name, pos, target_pos=None):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image(path, canon_name)
-        self.imageBase = self.image
+        self.image, self.rect = utils.load_image(image_name)
+        self.base_image = self.image
         self.rect.center = pos
         self.angle = math.radians(-90)
         if target_pos is not None:
@@ -150,7 +151,7 @@ class Canon(pygame.sprite.Sprite):
         self.angle = math.atan2(distance_x, distance_y) + math.pi
         centre_rect = self.rect.center
         angle = math.degrees(self.angle)
-        self.image = pygame.transform.rotate(self.imageBase, angle)
+        self.image = pygame.transform.rotate(self.base_image, angle)
         self.rect = self.image.get_rect(center=centre_rect)
 
     def update(self, pos, target_pos):
@@ -161,11 +162,29 @@ class Canon(pygame.sprite.Sprite):
 
 
 class Tank:
-    """A Tank consisting of a Body and a Canon."""
+    """A Tank consisting of a Body and a Canon.
 
-    def __init__(self, path, tank_name, canon_name, pos, target_pos=None):
-        self.body = Body(path, tank_name, canon_name, pos)
-        self.canon = Canon(path, canon_name, pos, target_pos)
+    Class attributes
+    ----------------
+    body_image_name : str
+        Filename of the tank's body image.
+        Default is DEFAULT_TANK_BODY_IMAGE.
+    canon_image_name : str
+        Filename of the tank's canon image.
+        Default is DEFAULT_TANK_CANON_IMAGE.
+    fire_sound_name : str
+        Filename of the tank's firing sound.
+        Default is DEFAULT_TANK_FIRE_SOUND.
+    """
+
+    body_image_name = settings.DEFAULT_TANK_BODY_IMAGE
+    canon_image_name = settings.DEFAULT_TANK_CANON_IMAGE
+    fire_sound_name = settings.DEFAULT_TANK_FIRE_SOUND
+
+    def __init__(self, pos, target_pos=None):
+        self.body = Body(self.body_image_name, pos)
+        self.canon = Canon(self.canon_image_name, pos, target_pos)
+        self.fire_sound = utils.load_sound(self.fire_sound_name)
         self.bullets = pygame.sprite.Group()
         self.alive = True
 
@@ -174,8 +193,7 @@ class Tank:
         x_bullet, y_bullet = self.body.rect.center
         x_bullet += int(30 * math.cos(beta))   # prend en compte
         y_bullet += int(-30 * math.sin(beta))  # la dimension du rect.
-        created_bullet = Bullet(
-            os.path.join(path, 'images'), x_bullet, y_bullet, beta)
+        created_bullet = Bullet(x_bullet, y_bullet, beta)
         self.bullets.add(created_bullet)
         return created_bullet
 
@@ -230,8 +248,7 @@ class Tank:
             self.body.stop()
 
     def update(self, path, target_pos, bullets_group, walls_group=None):
-        destroyedSound = pygame.mixer.Sound(
-            join(join(path, "music"), "destroyed_sound.wav"))
+        destroyedSound = utils.load_sound("destroyed_sound.wav")
         v = utils.get_volumes()[1]
         destroyedSound.set_volume(v)
         if self.alive:

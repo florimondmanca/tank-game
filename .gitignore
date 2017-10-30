@@ -1,6 +1,8 @@
-*.wav
 *.pyc
 __pycache__/
 .eggs/
 dist/
 build/
+DeadTheme.wav
+MainTheme.wav
+MenuTheme.wav

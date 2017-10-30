@@ -30,14 +30,14 @@ def level_selection_menu():
     pygame.font.init()  # pygame module for managing fonts
     size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    background = utils.Background(join(path, "images"), nlevel=-1)
+    background = utils.Background(nlevel=-1)
     screen.blit(background.image, (0, 0))
 
     # replace the mouse with a cursor
     pygame.mouse.set_visible(False)
-    curseur = Cursor(join(path, "images"))
+    curseur = Cursor()
 
-    clickSound = pygame.mixer.Sound(join(join(path, "music"), "click_sound.wav"))
+    clickSound = utils.load_sound("click_sound.wav")
 
     clock = pygame.time.Clock()
     running = 1

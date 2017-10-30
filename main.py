@@ -1,10 +1,5 @@
-# Tank Game:
-# A game with tanks and stuff.
-#
-# by Erkalys & Florimond Manca
-#
-# Main file
+"""Main entry point."""
+from src.menu import run_game
 
-from src.menu import *
-
-run_game()
+if __name__ == '__main__':
+    run_game()

@@ -37,8 +37,7 @@ import src.leveleditor as Level_Editor
 def run_game():
     pygame.init()
     utils.update_music_menu()
-    clickSound = pygame.mixer.Sound(join(join(MAIN_PATH, "music"),
-                                         "click_sound.wav"))
+    clickSound = utils.load_sound("click_sound.wav")
     pygame.font.init()  # module de pygame qui gère le texte
 
     size = utils.get_size()
@@ -53,59 +52,36 @@ def run_game():
     AI_group = []
     for element in pos_IA:
         if element[0] == 'yellow':
-            yellow = YellowAI(join(MAIN_PATH, "images"),
-                              'tank_corps_yellow.png',
-                              'canon_yellow.png', element[1],
+            yellow = YellowAI(element[1],
                               pos_joueur)
             AI_group.append(yellow)
         if element[0] == 'yellowPlus':
-            yellowp = YellowPlusAI(join(MAIN_PATH, "images"),
-                                   'tank_corps_yellowPlus.png',
-                                   'canon_yellowPlus.png',
-                                   element[1], pos_joueur)
+            yellowp = YellowPlusAI(element[1], pos_joueur)
             AI_group.append(yellowp)
         elif element[0] == 'blue':
-            blue = BlueAI(join(MAIN_PATH, "images"),
-                          'tank_corps_blue.png',
-                          'canon_blue.png',
-                          element[1], pos_joueur, [])
+            blue = BlueAI(element[1], pos_joueur, [])
             AI_group.append(blue)
         elif element[0] == 'bluePlus':
-            bluep = BluePlusAI(join(MAIN_PATH, "images"),
-                               'tank_corps_blue.png',
-                               'canon_bluePlus.png',
-                               element[1], pos_joueur, [])
+            bluep = BluePlusAI(element[1], pos_joueur, [])
             AI_group.append(bluep)
         elif element[0] == 'red':
-            red = RedAI(join(MAIN_PATH, "images"),
-                        'tank_corps_red.png',
-                        'canon_red.png',
-                        element[1], pos_joueur)
+            red = RedAI(element[1], pos_joueur)
             AI_group.append(red)
         elif element[0] == 'redPlus':
-            redp = RedPlusAI(join(MAIN_PATH, "images"),
-                             'tank_corps_red.png',
-                             'canon_redPlus.png',
-                             element[1], pos_joueur)
+            redp = RedPlusAI(element[1], pos_joueur)
             AI_group.append(redp)
         elif element[0] == 'purple':
-            purple = PurpleAI(join(MAIN_PATH, "images"),
-                              'tank_corps_purple.png',
-                              'canon_purple.png',
-                              element[1], pos_joueur, [])
+            purple = PurpleAI(element[1], pos_joueur, [])
             AI_group.append(purple)
         elif element[0] == 'purplePlus':
-            purplep = PurplePlusAI(join(MAIN_PATH, "images"),
-                                   'tank_corps_purple.png',
-                                   'canon_purplePlus.png',
-                                   element[1], pos_joueur, [])
+            purplep = PurplePlusAI(element[1], pos_joueur, [])
             AI_group.append(purplep)
 
-    background = utils.Background(join(MAIN_PATH, "images"), -1)
+    background = utils.Background(-1)
     screen.blit(background.image, (0, 0))
 
     pygame.mouse.set_visible(False)
-    curseur = Cursor(join(MAIN_PATH, "images"))
+    curseur = Cursor()
 
     clock = pygame.time.Clock()
     running = 1

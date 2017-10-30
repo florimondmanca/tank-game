@@ -8,10 +8,6 @@ from src.utils import load_image
 join = os.path.join
 
 
-def get_size():
-    return (1024, 672)
-
-
 class Wall(pygame.sprite.Sprite):
     """A decorative object which nor tanks nor bullets can pass through."""
 
@@ -22,7 +18,7 @@ class Wall(pygame.sprite.Sprite):
         self.rect = pygame.Rect(32 * j, 32 * i, 32, 32)
         self.pos = (j, i)
         chemin = join(path, join('images', 'textures'))
-        self.image = load_image(chemin, name)[0]
+        self.image = load_image(name)[0]
 
 
 class Pit(Wall):

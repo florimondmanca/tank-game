@@ -27,14 +27,14 @@ def pause(screen, player, background, walls_group, AI_group, bullets_group,
     resume = utils.Button("Resume Game", font, 512, 200, (200, 0, 0))
     exit = utils.Button("Return to Menu", font, 512, 300, (200, 0, 0))
 
-    curseur_pause = Cursor(join(path, "images"))  # par un curseur/pointeur
+    cursor = Cursor()
     c = pygame.time.Clock()
 
     while paused:
         c.tick(60)
         screen.blit(background.image, (0, 0))
 
-        curseur_pause.update()
+        cursor.update()
 
         screen.blit(player.body.image, player.body.rect)
         screen.blit(player.canon.image, player.canon.rect)
@@ -88,15 +88,15 @@ def dead_menu(screen, player, background, walls_group, AI_group, bullets_group,
     font2 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 50)
     you_died = font2.render("You died!", 1, (200, 0, 0))
     you_died_pos = you_died.get_rect(centerx=512, centery=150)
-    curseur_pause = Cursor(join(path, "images"))  # par un curseur/pointeur
+    cursor = Cursor()
     c = pygame.time.Clock()
-    deadimg = utils.load_image(join(path, 'images'), 'tank_destroyed.png')[0]
+    deadimg = utils.load_image('tank_destroyed.png')[0]
 
     while paused:
         c.tick(60)
         screen.blit(background.image, (0, 0))
 
-        curseur_pause.update()
+        cursor.update()
 
         screen.blit(deadimg, player.body.rect)
 
@@ -151,15 +151,14 @@ def main(n, custom=False, start=False, from_selection=False):
     walls_group, pits_group, pos_joueur, pos_IA, points_list = get_level(
         path, n, custom)
     pygame.mouse.set_visible(False)       # remplacement de la souris
-    curseur = Cursor(join(path, "images"))  # par un curseur/pointeur
+    curseur = Cursor()
     walls_pits = pygame.sprite.Group()
     unlocked = get_unlocked()  # les niveaux disponibles
     font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
     # recommencer = utils.Button("Try again", font,
     #                            512 - 200, 200, (200, 0, 0))
     # quitter = utils.Button("Back to menu", font, 512 + 200, 200, (200, 0, 0))
-    clickSound = pygame.mixer.Sound(join(join(path, "music"),
-                                         "click_sound.wav"))
+    clickSound = utils.load_sound("click_sound.wav")
     v = utils.get_volumes()[0]
 
     # Si on a lancé le niveau depuis le menu (pas de changement de musique
@@ -182,7 +181,7 @@ def main(n, custom=False, start=False, from_selection=False):
     for elt in pits_group:
         walls_pits.add(elt)
 
-    background = utils.Background(join(path, "images"), n, custom)
+    background = utils.Background(n, custom)
 
     pygame.font.init()
     font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 18)
@@ -203,8 +202,7 @@ def main(n, custom=False, start=False, from_selection=False):
                                     1, (69, 52, 16))
             msgpos2 = help_msg2.get_rect(centerx=800, centery=630)
 
-    player = Player(join(path, "images"), 'tank_corps_regular.png',
-                    'canon_regular.png', pos_joueur)
+    player = Player(pos_joueur)
 
     AI_group = []
     all_dead_AI = []
@@ -214,50 +212,28 @@ def main(n, custom=False, start=False, from_selection=False):
 
     for element in pos_IA:
         if element[0] == 'yellow':
-            yellow = YellowAI(join(path, "images"), 'tank_corps_yellow.png',
-                              'canon_yellow.png', element[1], pos_joueur)
+            yellow = YellowAI(element[1], pos_joueur)
             AI_group.append(yellow)
         if element[0] == 'yellowPlus':
-            yellowp = YellowPlusAI(join(path, "images"),
-                                   'tank_corps_yellowPlus.png',
-                                   'canon_yellowPlus.png',
-                                   element[1], pos_joueur)
+            yellowp = YellowPlusAI(element[1], pos_joueur)
             AI_group.append(yellowp)
         elif element[0] == 'blue':
-            blue = BlueAI(join(path, "images"),
-                          'tank_corps_blue.png',
-                          'canon_blue.png',
-                          element[1], pos_joueur, points_list.pop(0))
+            blue = BlueAI(element[1], pos_joueur, points_list.pop(0))
             AI_group.append(blue)
         elif element[0] == 'bluePlus':
-            bluep = BluePlusAI(join(path, "images"),
-                               'tank_corps_blue.png',
-                               'canon_bluePlus.png',
-                               element[1], pos_joueur, points_list.pop(0))
+            bluep = BluePlusAI(element[1], pos_joueur, points_list.pop(0))
             AI_group.append(bluep)
         elif element[0] == 'red':
-            red = RedAI(join(path, "images"),
-                        'tank_corps_red.png',
-                        'canon_red.png',
-                        element[1], pos_joueur)
+            red = RedAI(element[1], pos_joueur)
             AI_group.append(red)
         elif element[0] == 'redPlus':
-            redp = RedPlusAI(join(path, "images"),
-                             'tank_corps_red.png',
-                             'canon_redPlus.png',
-                             element[1], pos_joueur)
+            redp = RedPlusAI(element[1], pos_joueur)
             AI_group.append(redp)
         elif element[0] == 'purple':
-            purple = PurpleAI(join(path, "images"),
-                              'tank_corps_purple.png',
-                              'canon_purple.png',
-                              element[1], pos_joueur, points_list.pop(0))
+            purple = PurpleAI(element[1], pos_joueur, points_list.pop(0))
             AI_group.append(purple)
         elif element[0] == 'purplePlus':
-            purplep = PurplePlusAI(join(path, "images"),
-                                   'tank_corps_purple.png',
-                                   'canon_purplePlus.png',
-                                   element[1], pos_joueur, points_list.pop(0))
+            purplep = PurplePlusAI(element[1], pos_joueur, points_list.pop(0))
             AI_group.append(purplep)
         elif element[0] == 'spawner':
             spawner = Spawner(join(path, "images"), 'spawner.png', element[1])
@@ -273,9 +249,9 @@ def main(n, custom=False, start=False, from_selection=False):
     # On lance la boucle de jeu
     chemin_musique = join(path, "music")
     if sys.platform == "win32":
-        deadTheme = pygame.mixer.Sound(join(chemin_musique, "DeadTheme.ogg"))
+        deadTheme = utils.load_sound("DeadTheme.ogg")
     else:
-        deadTheme = pygame.mixer.Sound(join(chemin_musique, "DeadTheme.wav"))
+        deadTheme = utils.load_sound("DeadTheme.wav")
         deadTheme.set_volume(v)
     has_begun = False
     begin_msg = font.render("CLICK TO BEGIN !", 2, (200, 0, 0))
@@ -291,7 +267,7 @@ def main(n, custom=False, start=False, from_selection=False):
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == 1 and len(player.bullets) < 4:
                             # si clic gauche, on crée un boulet
-                            player.firesound.play()
+                            player.fire_sound.play()
                             pos = (event.pos[0], event.pos[1])
                             blt = player.create_bullet(path, pos)
                             player.bullets.add(blt)
@@ -365,10 +341,9 @@ def main(n, custom=False, start=False, from_selection=False):
                             for bullet in bullets:
                                 bullets_group.add(bullet)
                     else:
-                        chemin = join(path, 'images')
                         (x, y) = IA.body.rect.center
                         IA.body.image, IA.body.rect = utils.load_image(
-                            chemin, 'tank_destroyed.png')
+                            'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
                         AI_group.remove(IA)
@@ -382,10 +357,9 @@ def main(n, custom=False, start=False, from_selection=False):
                             for bullet in bullets:
                                 bullets_group.add(bullet)
                     else:
-                        chemin = join(path, 'images')
                         (x, y) = IA.body.rect.center
                         IA.body.image, IA.body.rect = utils.load_image(
-                            chemin, 'tank_destroyed.png')
+                            'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
                         IA.id.spawned = False
@@ -401,7 +375,7 @@ def main(n, custom=False, start=False, from_selection=False):
                         all_spawners.remove(spawner)
                         center = spawner.rect.center
                         spawner.image, spawner.rect = utils.load_image(
-                            join(path, 'images'), 'spawner_destroyed.png')
+                            'spawner_destroyed.png')
                         spawner.rect.center = center
                         all_dead_spawners.append(spawner)
 
