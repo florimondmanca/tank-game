@@ -1,10 +1,4 @@
-"""
-Tank Game: A game with tanks and stuff.
-
-by Erkalys & Florimond Manca
-
-Level loop
-"""
+"""Main level loop."""
 
 # Imports
 
@@ -14,9 +8,9 @@ import os
 
 from src import utils
 from src.bullet_cursor import Cursor
-from src_AI_Player import Player, YellowAI, YellowPlusAI, BlueAI, BluePlusAI, \
+from src.aiplayer import Player, YellowAI, YellowPlusAI, BlueAI, BluePlusAI, \
     RedAI, RedPlusAI, PurpleAI, PurplePlusAI, Spawner, SpawnerPlus
-from src_Importation import get_level, get_unlocked, overwrite_unlocked
+from src.importation import get_level, get_unlocked, overwrite_unlocked
 
 join = os.path.join
 path = os.getcwd()

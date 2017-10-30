@@ -13,7 +13,7 @@ import math
 import os
 from queue import PriorityQueue  # Priority Queue for A* algorithm
 from random import randint
-from src_Tank import Tank
+from src.tank import Tank
 from src import utils
 
 path = os.getcwd()

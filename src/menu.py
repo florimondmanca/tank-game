@@ -25,13 +25,13 @@ if MAIN_PATH not in sys.path:
 
 from src import utils
 from src.bullet_cursor import Cursor
-from src_AI_Player import YellowAI, YellowPlusAI, BlueAI, BluePlusAI, RedAI, \
+from src.aiplayer import YellowAI, YellowPlusAI, BlueAI, BluePlusAI, RedAI, \
     RedPlusAI, PurpleAI, PurplePlusAI
-from src_Level_Loop import main
-from src_Importation import get_level
-from src_Level_Selection import level_selection_menu
+from src.levelloop import main
+from src.importation import get_level
+from src.levelselection import level_selection_menu
 from src.options import options_menu
-import src_Level_Editor as Level_Editor
+import src.leveleditor as Level_Editor
 
 
 def run_game():

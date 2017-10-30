@@ -1,9 +1,4 @@
-# Tank Game:
-# A game with tanks and stuff.
-#
-# by Erkalys & Florimond Manca
-#
-# Level selection menu
+"""Level selection menu."""
 
 
 # Imports
@@ -11,15 +6,12 @@
 import pygame
 from pygame.locals import *
 from pygame.font import *
-import math
-import sys
 import os
-import src_Tank as Tank_class
 from src import utils
 from src.bullet_cursor import Cursor
-from src_AI_Player import *
-from src_Level_Loop import main
-from src_Importation import get_level, get_unlocked, overwrite_unlocked
+from src.aiplayer import *
+from src.levelloop import main
+from src.importation import get_unlocked
 
 # File access path
 join = os.path.join

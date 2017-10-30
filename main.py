@@ -5,6 +5,6 @@
 #
 # Main file
 
-from src_Menu import *
+from src.menu import *
 
 run_game()
