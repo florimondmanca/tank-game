@@ -4,7 +4,7 @@
 
 import pygame
 import os
-from src.utils import load_image
+from . import loaders
 join = os.path.join
 
 
@@ -17,8 +17,7 @@ class Wall(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(32 * j, 32 * i, 32, 32)
         self.pos = (j, i)
-        chemin = join(path, join('images', 'textures'))
-        self.image = load_image(name)[0]
+        self.image = loaders.image(name)
 
 
 class Pit(Wall):

@@ -11,6 +11,7 @@
 import pygame
 import sys
 import os
+from . import loaders
 join = os.path.join
 
 if sys.platform == "win32":  # si sous windows,
@@ -37,7 +38,7 @@ import src.leveleditor as Level_Editor
 def run_game():
     pygame.init()
     utils.update_music_menu()
-    clickSound = utils.load_sound("click_sound.wav")
+    clickSound = loaders.sound("click_sound.wav")
     pygame.font.init()  # module de pygame qui gère le texte
 
     size = utils.get_size()

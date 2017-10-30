@@ -15,6 +15,7 @@ from queue import PriorityQueue  # Priority Queue for A* algorithm
 from random import randint
 from src.tank import Tank
 from src import utils
+from . import loaders
 
 path = os.getcwd()
 join = os.path.join
@@ -42,7 +43,7 @@ class Player(Tank):
     def __init__(self, pos):
         Tank.__init__(self, pos)
         self.score = 0    # player's score
-        self.fire_sound.set_volume(utils.get_volumes()[1])
+        self.fire_sound.set_volume(utils.get_volume('fx'))
 
 
 class YellowAI(Tank):
@@ -58,7 +59,7 @@ class YellowAI(Tank):
         self.time_trigger = 0
         self.time_counter = 0
         self.init_trigger()
-        v = utils.get_volumes()[1]
+        v = utils.get_volume('fx')
         self.fire_sound.set_volume(v)
 
     def spot_player(self, path, target_pos, walls_group):
@@ -66,7 +67,7 @@ class YellowAI(Tank):
         # wall, return False (the player is not on sight).
         # Else, it arrives on 'target_pos' and return True (the player is on
         # sight and a bullet can be shoot).
-        fake_bullet = self.create_bullet(path, target_pos)
+        fake_bullet = self.create_bullet(target_pos)
         test_rectangle = pygame.rect.Rect(0, 0, 30, 30)
         test_rectangle.center = target_pos
         while not test_rectangle.contains(fake_bullet.rect):
@@ -80,9 +81,9 @@ class YellowAI(Tank):
     def init_trigger(self):
         self.time_trigger = randint(100, 300)
 
-    def generate_new_bullets(self, path, target_pos):
+    def generate_new_bullets(self, target_pos):
         """Generate only one bullet."""
-        return self.create_bullet(path, target_pos)
+        return self.create_bullet(target_pos)
 
     def update(self, path, target_pos, walls_group, pits_group,
                bullets_group, in_menu=False):
@@ -94,7 +95,7 @@ class YellowAI(Tank):
                 if self.spot_player(path, target_pos, walls_group):
                     self.fire_sound.play()
                     new_generated_bullets = self.generate_new_bullets(
-                        path, target_pos)
+                        target_pos)
                     new_bullets = pygame.sprite.Group(new_generated_bullets)
                     self.bullets.add(new_generated_bullets)
             self.time_counter += 1
@@ -111,7 +112,7 @@ class YellowPlusAI(YellowAI):
     body_image_name = "tank_corps_yellowPlus.png"
     canon_image_name = "canon_yellowPlus.png"
 
-    def generate_new_bullets(self, path, target_pos):
+    def generate_new_bullets(self, target_pos):
         """Generate three bullets.
 
         bullet_1 goes towards target_pos;
@@ -119,14 +120,13 @@ class YellowPlusAI(YellowAI):
         bullet_3 a bit under it
         """
         delta = 12  # angular gap in degrees
-        bullet_1 = self.create_bullet(path, target_pos)
-        image_path = join(path, "images")
+        bullet_1 = self.create_bullet(target_pos)
         x, y = bullet_1.rect.center
-        bullet_2 = self.create_bullet(path, target_pos)
-        bullet_2.__init__(image_path, x, y,
+        bullet_2 = self.create_bullet(target_pos)
+        bullet_2.__init__(x, y,
                           bullet_1.angle + math.radians(delta))
-        bullet_3 = self.create_bullet(path, target_pos)
-        bullet_3.__init__(image_path, x, y,
+        bullet_3 = self.create_bullet(target_pos)
+        bullet_3.__init__(x, y,
                           bullet_1.angle - math.radians(delta))
         return bullet_1, bullet_2, bullet_3
 
@@ -210,9 +210,8 @@ class PurpleAI(BlueAI):
         BlueAI.__init__(self, pos, target_pos, points_list)
         self.max_shots = 3
         self.n_shots = 0
-        chemin = path.replace("images", "music")
-        v = utils.get_volumes()[1]
-        self.destroyedSound = utils.load_sound("destroyed_sound.wav")
+        v = utils.get_volume('fx')
+        self.destroyedSound = loaders.sound("destroyed_sound.wav")
         self.destroyedSound.set_volume(v)
         self.fire_sound.set_volume(v)
         self.updater_class = YellowAI
@@ -233,9 +232,9 @@ class PurpleAI(BlueAI):
                 if self.n_shots == self.max_shots:
                     self.alive = False
                 else:
-                    self.body.image = utils.load_image(
+                    self.body.image = loaders.image(
                         "tank_corps_purple_dmg{}.png"
-                        .format(self.n_shots))[0]
+                        .format(self.n_shots))
                     self.body.base_image = self.body.image
         return self.updater_class.update(self, path, target_pos, walls_group,
                                          pits_group, bullets_group, in_menu)
@@ -405,7 +404,7 @@ class Spawner(pygame.sprite.Sprite):
                  spawned_body_name="tank_corps_spawned.png",
                  spawned_canon_name="canon_spawned.png"):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image(sprite_name)
+        self.image, self.rect = loaders.image_with_rect(sprite_name)
         self.base_image = self.image
         self.area = pygame.display.get_surface().get_rect()
         self.rect.center = pos
@@ -418,8 +417,8 @@ class Spawner(pygame.sprite.Sprite):
         self.alive = True
         self.spawned = False
         # ^True if an AI spawned by this spawner is still alive
-        self.destroyedSound = utils.load_sound("destroyed_sound.wav")
-        self.destroyedSound.set_volume(utils.get_volumes()[1])
+        self.destroyedSound = loaders.sound("destroyed_sound.wav")
+        self.destroyedSound.set_volume(utils.get_volume('fx'))
         self.init_trigger()
 
     def init_trigger(self):
@@ -450,8 +449,8 @@ class Spawner(pygame.sprite.Sprite):
                 if self.n_shots == self.max_shots:
                     self.alive = False
                 else:
-                    self.image = utils.load_image("spawner_dmg{}.png"
-                                                  .format(self.n_shots))[0]
+                    self.image = loaders.image("spawner_dmg{}.png"
+                                               .format(self.n_shots))
         screen = pygame.display.get_surface()
         screen.blit(self.image, self.rect)
         return generated_AI

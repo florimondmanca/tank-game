@@ -6,6 +6,7 @@
 import pygame
 import sys
 import os
+from . import loaders
 join = os.path.join
 
 # chemin d'accès aux fichiers
@@ -23,7 +24,7 @@ def options_menu():
     pygame.font.init()
     size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    clickSound = utils.load_sound("click_sound.wav")
+    clickSound = loaders.sound("click_sound.wav")
     background = utils.Background(-1)
     screen.blit(background.image, (0, 0))
     pygame.mouse.set_visible(False)
@@ -44,7 +45,7 @@ def options_menu():
         1, (30, 30, 30))
     creditspos = credits.get_rect(centerx=512, centery=640)
 
-    mv, fxv = utils.get_volumes()
+    mv, fxv = utils.get_volumes().values()
     x1 = 312 + 400 * mv
     x2 = 312 + 400 * fxv
     music_button = utils.SlideButton("Music",
@@ -91,7 +92,7 @@ def options_menu():
                 string = "\n".join(str(volume) for volume in volumes)
                 with open(join(path, "options.txt"), mode='w') as options_txt:
                     options_txt.write(string)
-                pygame.mixer.music.set_volume(utils.get_volumes()[0])
+                pygame.mixer.music.set_volume(utils.get_volume('music'))
 
         screen.blit(background.image, (0, 0))
         screen.blit(titre, titrepos)

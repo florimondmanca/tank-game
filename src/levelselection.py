@@ -12,6 +12,7 @@ from src.bullet_cursor import Cursor
 from src.aiplayer import *
 from src.levelloop import main
 from src.importation import get_unlocked
+from . import loaders
 
 # File access path
 join = os.path.join
@@ -37,7 +38,7 @@ def level_selection_menu():
     pygame.mouse.set_visible(False)
     curseur = Cursor()
 
-    clickSound = utils.load_sound("click_sound.wav")
+    clickSound = loaders.sound("click_sound.wav")
 
     clock = pygame.time.Clock()
     running = 1
