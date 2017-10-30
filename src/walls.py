@@ -1,10 +1,4 @@
-"""
-Tank Game: A game with tanks and stuff.
-
-by Erkalys & Florimond Manca
-
-Defining the decorative objects such as walls and pits.
-"""
+"""Defining the decorative objects such as walls and pits."""
 
 # Imports
 

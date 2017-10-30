@@ -1,14 +1,7 @@
-# Tank Game:
-# A game with tanks and stuff.
-#
-# by Erkalys & Florimond Manca
-#
-# Defining the base Tank class
-
+"""Base Tank class."""
 # Imports
 
 import pygame
-from pygame.locals import *
 import math
 import os
 from src import utils
@@ -25,6 +18,7 @@ elif '/' in path:
 
 # Note: All angles defined in these classes (Tank, Canon, Bullet...) are
 # defined from the x axis and anti-clockwise.
+
 
 class Body(pygame.sprite.Sprite):
     """Body: the body of a tank."""
@@ -43,27 +37,37 @@ class Body(pygame.sprite.Sprite):
         self.path = path
 
     def _update_body_angle(self):
-        '''_update_body_angle(self): Gère la rotation du corps du tank. Incrémente ou décrémente son angle suivant la valeur de l'angle de consigne goal_angle, obtenu à partir des touches directionnelles du clavier. '''
+        """Update the tank's body angle.
+
+        Increment or decrement the angle according to the goal_angle,
+        which is obtained through keyboard directional keys.
+
+        Let α be the body's current angle, and γ the goal angle.
+        Compute δ = (γ - α)
+        Transform δ = (δ % 360)
+        """
+        # TODO refactor
         alpha, beta = round(math.degrees(self.angle)), self.goal_angle
         delta = beta - alpha
-        if delta > 180:       # gère les cas particuliers
+        if delta > 180:  # gère les cas particuliers
             delta = delta - 360
         if delta < -180:
             delta = delta + 360
-        if delta > 5:       # on se laisse une marge pour éviter les erreurs numériques
+        _eps = 5  # margin for numerical errors
+        if delta > _eps:
             self.angle += self.rotation_step
-        elif delta < -5:
+        elif delta < -_eps:
             self.angle -= self.rotation_step
 
     def _rotate_body_image(self):
-        ''' _rotate_body_image(self): pivote le sprite du corps d'un angle self.angle '''
+        """Rotate the body's sprite according to self.angle."""
         center_rect = self.rect.center
         angle = math.degrees(self.angle)
         self.image = pygame.transform.rotate(self.imageBase, angle)
         self.rect = self.image.get_rect(center=center_rect)
 
     def update(self, walls_group=None):
-        """update(self, walls_group): updates the body's position, taking walls into account"""
+        """Update the body's position, taking walls into account."""
         if walls_group is None:
             walls_group = pygame.sprite.Group()
         self._update_body_angle()
@@ -75,9 +79,8 @@ class Body(pygame.sprite.Sprite):
         collided_walls = pygame.sprite.spritecollide(
             self, walls_group, False, pygame.sprite.collide_rect)
         if collided_walls:
-            n = len(collided_walls)
             self.rect = oldpos
-            # on trouve la direction à bloquer
+            # find the direction to block
             for wall in collided_walls:
                 if wall.rect.collidepoint(self.rect.midright):
                     if self.movepos[0] == 1:
@@ -95,7 +98,6 @@ class Body(pygame.sprite.Sprite):
         screen = pygame.display.get_surface()
         screen.blit(self.image, self.rect)
 
-    # fonctions de déplacement
     def moveright(self):
         self.movepos[0] = self.speed
 
@@ -118,8 +120,13 @@ class Body(pygame.sprite.Sprite):
         self.movepos = [0, 0]
 
     def bullet_angle(self, target_pos):
-        ''' bullet_angle(self, target_pos): calcule l'angle de la trajectoire du nouveau boulet.
-        target_pos représente la position de la cible'''
+        """Compute the angle of trajectory for a new bullet.
+
+        Parameters
+        ----------
+        target_pos : tuple
+            The 2D position of the target.
+        """
         distance_x = self.rect.centerx - target_pos[0]
         distance_y = self.rect.centery - target_pos[1]
         return math.atan2(distance_x, distance_y) + math.pi / 2
@@ -134,11 +141,11 @@ class Canon(pygame.sprite.Sprite):
         self.imageBase = self.image
         self.rect.center = pos
         self.angle = math.radians(-90)
-        if target_pos != None:
+        if target_pos is not None:
             self._rotate(target_pos)
 
     def _rotate(self, target_pos):
-        """Rotates the canon's sprite."""
+        """Rotate the canon's sprite to look at a target position."""
         distance_x = self.rect.centerx - target_pos[0]
         distance_y = self.rect.centery - target_pos[1]
         self.angle = math.atan2(distance_x, distance_y) + math.pi
@@ -155,7 +162,7 @@ class Canon(pygame.sprite.Sprite):
 
 
 class Tank:
-    """Tank: the tank used by the player and the AI's. Consists of a Body and a Canon."""
+    """A Tank consisting of a Body and a Canon."""
 
     def __init__(self, path, tank_name, canon_name, pos, target_pos=None):
         self.body = Body(path, tank_name, canon_name, pos)

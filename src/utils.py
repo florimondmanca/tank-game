@@ -1,9 +1,4 @@
-# Tank Game:
-# A game with tanks and stuff.
-#
-# by Erkalys & Florimond Manca
-#
-# General utilities functions
+"""General utility functions."""
 
 # Imports
 

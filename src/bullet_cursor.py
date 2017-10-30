@@ -1,16 +1,8 @@
-# Tank Game:
-# A game with tanks and stuff.
-#
-# by Erkalys & Florimond Manca
-#
-# Defining the Bullet and Cursor classes
-
+"""Bullet and Cursor classes."""
 # Imports
 
 import pygame
-from pygame.locals import *
 import math
-import sys
 import os
 from src import utils
 
