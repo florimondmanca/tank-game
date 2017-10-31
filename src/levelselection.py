@@ -53,7 +53,8 @@ def level_selection_menu():
 
     back = utils.Button("Back", font_big, 512, 590, (200, 0, 0))
     help_msg = font_medium.render(
-        "You can only select levels you've unlocked. To unlock a level, beat all the previous ones.", (69, 52, 16))
+        "You can only select levels you've unlocked. "
+        "To unlock a level, beat all the previous ones.", (69, 52, 16))
     msgpos = help_msg.get_rect(centerx=512, centery=620)
 
     # load the buttons

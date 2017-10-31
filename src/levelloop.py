@@ -157,7 +157,7 @@ def main(n, custom=False, start=False, from_selection=False):
     unlocked = get_unlocked()  # les niveaux disponibles
     font = loaders.font(size=36)
     clickSound = loaders.sound("click_sound.wav")
-    v = utils.get_volume('fx')
+    v = utils.get_volume('music')
 
     # Si on a lancé le niveau depuis le menu (pas de changement de musique
     # lors de l'enchainement de deux niveaux
