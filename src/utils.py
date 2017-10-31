@@ -7,13 +7,30 @@ from pygame.locals import *
 import os
 import sys
 
-from . import assets
+from . import assets, settings
 
 join = os.path.join
 path = os.getcwd()
 
 
 # Miscallenous functions
+
+def get_default_theme(platform=sys.platform):
+    """Get default theme for given platform."""
+    if platform == 'win32':
+        return settings.DEFAULT_THEME_WIN
+    else:
+        return settings.DEFAULT_THEME
+
+
+def play_default_theme(force=False):
+    """If no music is being played, play the default theme."""
+    if force or not pygame.mixer.music.get_busy():
+        v = get_volume('music')
+        theme = get_default_theme()
+        assets.music(theme, volume=v)
+        pygame.mixer.music.play(-1)
+
 
 def update_music_menu():
     """If no music is being played, play the menu theme."""
@@ -138,6 +155,9 @@ class Button:
             b = min(b + 70, 255)
             g = min(g + 70, 255)
         return (r, g, b)
+
+    def on_click(self):
+        pass
 
 
 class SlideButton(Button):

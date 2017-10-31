@@ -135,13 +135,22 @@ class BlueAI(YellowAI):
     """An AI that moves along a pre-defined path.
 
     Shoots the player on sight.
+
+    Parameters
+    ----------
+    pos : tuple
+        Initial 2D position.
+    target_pos : tuple
+        Initial 2D position of the target.
     """
 
     body_image_name = "tank_corps_blue.png"
     canon_image_name = "canon_blue.png"
 
-    def __init__(self, pos, target_pos, points_list):
+    def __init__(self, pos, target_pos, points_list=None):
         YellowAI.__init__(self, pos, target_pos)
+        if points_list is None:
+            points_list = []
         self.points_list = points_list  # a list of tuples (x, y).
         # The AI will follow the list and go to the targets in
         # horizontal and vertical lines.
@@ -156,7 +165,6 @@ class BlueAI(YellowAI):
             v = self.body.speed
             if abs(self_x - goal_x) > v or abs(self_y - goal_y) > v:
                 # we're still not at the goal point
-                move_x, move_y = self.body.move_x, self.body.move_y
                 self.body.stopvertical()  # always move on x first.
                 if self_x < goal_x - v:
                     self.body.moveright()
@@ -206,7 +214,7 @@ class PurpleAI(BlueAI):
     body_image_name = "tank_corps_purple.png"
     canon_image_name = "canon_purple.png"
 
-    def __init__(self, pos, target_pos, points_list):
+    def __init__(self, pos, target_pos, points_list=None):
         BlueAI.__init__(self, pos, target_pos, points_list)
         self.max_shots = 3
         self.n_shots = 0
@@ -249,6 +257,7 @@ class RedAI(YellowAI):
 
     Shoots at the player on sight.
     """
+
     body_image_name = "tank_corps_red.png"
     canon_image_name = "canon_red.png"
 
@@ -326,7 +335,6 @@ class RedAI(YellowAI):
         v = self.body.speed
         if abs(self_x - goal_x) > v or abs(self_y - goal_y) > v:
             # we're still not at the goal point
-            move_x, move_y = self.body.move_x, self.body.move_y
             self.body.stopvertical()  # always move on x first.
             if self_x < goal_x - v:
                 self.body.moveright()
@@ -377,6 +385,9 @@ class SpawnedAI(RedAI):
     Shoots at the player on sight.
     """
 
+    body_image_name = 'tank_corps_spawned.png'
+    canon_image_name = 'canon_spawned.png'
+
     def __init__(self, pos, target_pos, spawner):
         RedAI.__init__(self, pos, target_pos)
         self.id = spawner  # the spawner which the AI belongs to
@@ -388,6 +399,8 @@ class SpawnedPlusAI(RedPlusAI):
     Moves towards the player on a dynamically defined path.
     Shoots at the player on sight 3 bullets at a time.
     """
+
+    canon_image_name = 'canon_spawnedPlus.png'
 
     def __init__(self, pos, target_pos, spawner):
         RedPlusAI.__init__(self, pos, target_pos)
@@ -433,11 +446,7 @@ class Spawner(pygame.sprite.Sprite):
                     self.init_trigger()
                     self.spawned = True
                     pos = self.rect.center
-                    image_path = join(path, "images")
-                    generated_AI = SpawnedAI(
-                        image_path, self.spawned_body_name,
-                        self.spawned_canon_name, pos,
-                        target_pos, self)
+                    generated_AI = SpawnedAI(pos, target_pos, self)
                 else:
                     self.time_counter += 1
             collided = pygame.sprite.spritecollide(self, bullets_group, False)
@@ -450,7 +459,7 @@ class Spawner(pygame.sprite.Sprite):
                     self.alive = False
                 else:
                     self.image = assets.image("spawner_dmg{}.png"
-                                               .format(self.n_shots))
+                                              .format(self.n_shots))
         screen = pygame.display.get_surface()
         screen.blit(self.image, self.rect)
         return generated_AI
@@ -462,11 +471,8 @@ class SpawnerPlus(Spawner):
     3 shots are needed to kill it.
     """
 
-    def __init__(self, path, sprite_name, pos,
-                 spawned_body_name="tank_corps_spawned.png",
-                 spawned_canon_name="canon_spawnedPlus.png"):
-        Spawner.__init__(self, path, sprite_name, pos, spawned_body_name,
-                         spawned_canon_name)
+    def __init__(self, sprite_name, pos):
+        super().__init__(sprite_name, pos)
         self.max_shots = 3
 
 
@@ -478,3 +484,20 @@ class IATurret:  # TODO
 
     def __init__(self, path, sprite_name, pos, target_pos):
         pass
+
+
+def load_ai(name, initial_position, target=None):
+    """Instanciate an AI tank by its name and initial position."""
+    ai_classes = {
+        'yellow': YellowAI,
+        'yellowPlus': YellowPlusAI,
+        'blue': BlueAI,
+        'bluePlus': BluePlusAI,
+        'red': RedAI,
+        'redPlus': RedPlusAI,
+        'purple': PurpleAI,
+        'purplePlus': PurplePlusAI,
+    }
+    ai_class = ai_classes[name]
+    ai = ai_class(initial_position, target)
+    return ai

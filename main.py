@@ -1,5 +1,5 @@
 """Main entry point."""
-from src.menu import run_game
+from src.game import run_game
 
 if __name__ == '__main__':
     run_game()

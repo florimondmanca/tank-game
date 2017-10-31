@@ -228,11 +228,10 @@ def main(n, custom=False, start=False, from_selection=False):
             purplep = PurplePlusAI(element[1], pos_joueur, points_list.pop(0))
             AI_group.append(purplep)
         elif element[0] == 'spawner':
-            spawner = Spawner(join(path, "images"), 'spawner.png', element[1])
+            spawner = Spawner('spawner.png', element[1])
             all_spawners.append(spawner)
         elif element[0] == 'spawnerPlus':
-            spawnerp = SpawnerPlus(join(path, "images"), 'spawnerPlus.png',
-                                   element[1])
+            spawnerp = SpawnerPlus('spawnerPlus.png', element[1])
             all_spawners.append(spawnerp)
 
     bullets_group = pygame.sprite.Group()
