@@ -1,4 +1,4 @@
-"""Defininition of generic asset loaders."""
+"""Defininition of generic asset management utilities."""
 
 import os
 import pygame
@@ -10,7 +10,7 @@ class AssetLoader:
     """Base asset loader.
 
     Exposes a load(filename, *args, **kwargs) that shall be implemented in
-    inherited loaders.
+    inherited assets.
 
     Class attributes
     ----------------
@@ -33,7 +33,7 @@ class AssetLoader:
         """Get the asset given a file path.
 
         Abstract class method, shall be implemented in subclasses using
-        pygame's loaders.
+        pygame's assets.
 
         Parameters
         ----------

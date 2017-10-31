@@ -12,7 +12,7 @@ from src.bullet_cursor import Cursor
 from src.aiplayer import *
 from src.levelloop import main
 from src.importation import get_unlocked
-from . import loaders
+from . import assets
 
 # File access path
 join = os.path.join
@@ -38,15 +38,15 @@ def level_selection_menu():
     pygame.mouse.set_visible(False)
     curseur = Cursor()
 
-    clickSound = loaders.sound("click_sound.wav")
+    clickSound = assets.sound("click_sound.wav")
 
     clock = pygame.time.Clock()
     running = 1
     buttons = []
     unlocked = get_unlocked()  # unlocked levels
-    font_big = loaders.font(size=36)
-    font_medium = loaders.font(size=18)
-    font_buttons = loaders.font(size=20)
+    font_big = assets.font(size=36)
+    font_medium = assets.font(size=18)
+    font_buttons = assets.font(size=20)
 
     title = font_big.render("Select a level", (30, 30, 30))
     titlepos = title.get_rect(centerx=512, centery=50)

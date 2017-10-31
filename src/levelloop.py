@@ -11,7 +11,7 @@ from .bullet_cursor import Cursor
 from .aiplayer import Player, YellowAI, YellowPlusAI, BlueAI, BluePlusAI, \
     RedAI, RedPlusAI, PurpleAI, PurplePlusAI, Spawner, SpawnerPlus
 from .importation import get_level, get_unlocked, overwrite_unlocked
-from . import loaders
+from . import assets
 
 join = os.path.join
 path = os.getcwd()
@@ -24,7 +24,7 @@ def pause(screen, player, background, walls_group, AI_group, bullets_group,
     """Pause loop."""
     global clickSound
     paused = True
-    font = loaders.font(size=36)
+    font = assets.font(size=36)
     resume = utils.Button("Resume Game", font, 512, 200, (200, 0, 0))
     exit = utils.Button("Return to Menu", font, 512, 300, (200, 0, 0))
 
@@ -83,15 +83,15 @@ def dead_menu(screen, player, background, walls_group, AI_group, bullets_group,
     """Dead menu loop."""
     global clickSound
     paused = True
-    font1 = loaders.font(size=36)
+    font1 = assets.font(size=36)
     recommencer = utils.Button("Try Again", font1, 512, 220, (200, 0, 0))
     quitter = utils.Button("Return to Menu", font1, 512, 350, (200, 0, 0))
-    font2 = loaders.font(size=50)
+    font2 = assets.font(size=50)
     you_died = font2.render("You died!", 1, (200, 0, 0))
     you_died_pos = you_died.get_rect(centerx=512, centery=150)
     cursor = Cursor()
     c = pygame.time.Clock()
-    deadimg = loaders.image('tank_destroyed.png')
+    deadimg = assets.image('tank_destroyed.png')
 
     while paused:
         c.tick(60)
@@ -155,17 +155,17 @@ def main(n, custom=False, start=False, from_selection=False):
     curseur = Cursor()
     walls_pits = pygame.sprite.Group()
     unlocked = get_unlocked()  # les niveaux disponibles
-    font = loaders.font(size=36)
-    clickSound = loaders.sound("click_sound.wav")
+    font = assets.font(size=36)
+    clickSound = assets.sound("click_sound.wav")
     v = utils.get_volume('music')
 
     # Si on a lancé le niveau depuis le menu (pas de changement de musique
     # lors de l'enchainement de deux niveaux
     if start:
         if sys.platform == "win32":
-            loaders.music('MainTheme.ogg', volume=v)
+            assets.music('MainTheme.ogg', volume=v)
         else:
-            loaders.music('MainTheme.wav', volume=v)
+            assets.music('MainTheme.wav', volume=v)
         pygame.mixer.music.play(-1)
 
     for elt in walls_group:
@@ -176,7 +176,7 @@ def main(n, custom=False, start=False, from_selection=False):
     background = utils.Background(n, custom)
 
     pygame.font.init()
-    font = loaders.font(size=18)
+    font = assets.font(size=18)
     if (n == 1 or n == 2) and not custom:
         if n == 1:
             help_msg1 = font.render("Use the mouse to control your cannon",
@@ -241,9 +241,9 @@ def main(n, custom=False, start=False, from_selection=False):
     # On lance la boucle de jeu
     chemin_musique = join(path, "music")
     if sys.platform == "win32":
-        deadTheme = loaders.sound("DeadTheme.ogg")
+        deadTheme = assets.sound("DeadTheme.ogg")
     else:
-        deadTheme = loaders.sound("DeadTheme.wav")
+        deadTheme = assets.sound("DeadTheme.wav")
         deadTheme.set_volume(v)
     has_begun = False
     begin_msg = font.render("CLICK TO BEGIN !", (200, 0, 0))
@@ -334,7 +334,7 @@ def main(n, custom=False, start=False, from_selection=False):
                                 bullets_group.add(bullet)
                     else:
                         (x, y) = IA.body.rect.center
-                        IA.body.image, IA.body.rect = loaders.image_with_rect(
+                        IA.body.image, IA.body.rect = assets.image_with_rect(
                             'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
@@ -350,7 +350,7 @@ def main(n, custom=False, start=False, from_selection=False):
                                 bullets_group.add(bullet)
                     else:
                         (x, y) = IA.body.rect.center
-                        IA.body.image, IA.body.rect = loaders.image_with_rect(
+                        IA.body.image, IA.body.rect = assets.image_with_rect(
                             'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
@@ -366,7 +366,7 @@ def main(n, custom=False, start=False, from_selection=False):
                     else:
                         all_spawners.remove(spawner)
                         center = spawner.rect.center
-                        spawner.image, spawner.rect = loaders.image_with_rect(
+                        spawner.image, spawner.rect = assets.image_with_rect(
                             'spawner_destroyed.png')
                         spawner.rect.center = center
                         all_dead_spawners.append(spawner)

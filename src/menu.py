@@ -6,7 +6,7 @@
 import pygame
 import sys
 import os
-from . import loaders
+from . import assets
 from . import utils
 from . import settings
 from .bullet_cursor import Cursor
@@ -29,7 +29,7 @@ def run_game():
     """Main game loop."""
     pygame.init()
     utils.update_music_menu()
-    clickSound = loaders.sound(settings.DEFAULT_CLICK_SOUND)
+    clickSound = assets.sound(settings.DEFAULT_CLICK_SOUND)
     pygame.font.init()  # module de pygame qui gère le texte
 
     size = utils.get_size()
@@ -37,7 +37,7 @@ def run_game():
     pygame.display.set_caption(settings.GAME_NAME)
     walls_group, pits_group, pos_joueur, pos_IA, blah = get_level(
         MAIN_PATH, -1)
-    icon = loaders.image(settings.WINDOW_ICON_IMAGE)
+    icon = assets.image(settings.WINDOW_ICON_IMAGE)
     pygame.display.set_icon(icon)
 
     # get the AI data
@@ -78,8 +78,8 @@ def run_game():
     clock = pygame.time.Clock()
     running = 1
 
-    font = loaders.font(size=36)
-    bigfont = loaders.font(size=72)
+    font = assets.font(size=36)
+    bigfont = assets.font(size=72)
 
     title = bigfont.render('TANK GAME', color=(30, 30, 30))
     titlepos = title.get_rect(centerx=512, centery=100)

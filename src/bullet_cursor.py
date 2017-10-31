@@ -4,7 +4,7 @@
 import pygame
 import math
 import os
-from . import loaders
+from . import assets
 
 path = os.getcwd()
 
@@ -16,7 +16,7 @@ class Bullet(pygame.sprite.Sprite):
 
     def __init__(self, x, y, angle):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = loaders.image_with_rect("bullet.png")
+        self.image, self.rect = assets.image_with_rect("bullet.png")
         self.rect.centerx = x
         self.rect.centery = y
         self.true_pos = (x, y)  # (float, float)
@@ -40,7 +40,7 @@ class Cursor(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = loaders.image_with_rect("cursor.png")
+        self.image, self.rect = assets.image_with_rect("cursor.png")
 
     def update(self):
         self.rect.center = pygame.mouse.get_pos()

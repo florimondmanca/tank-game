@@ -15,7 +15,7 @@ from queue import PriorityQueue  # Priority Queue for A* algorithm
 from random import randint
 from src.tank import Tank
 from src import utils
-from . import loaders
+from . import assets
 
 path = os.getcwd()
 join = os.path.join
@@ -211,7 +211,7 @@ class PurpleAI(BlueAI):
         self.max_shots = 3
         self.n_shots = 0
         v = utils.get_volume('fx')
-        self.destroyedSound = loaders.sound("destroyed_sound.wav")
+        self.destroyedSound = assets.sound("destroyed_sound.wav")
         self.destroyedSound.set_volume(v)
         self.fire_sound.set_volume(v)
         self.updater_class = YellowAI
@@ -232,7 +232,7 @@ class PurpleAI(BlueAI):
                 if self.n_shots == self.max_shots:
                     self.alive = False
                 else:
-                    self.body.image = loaders.image(
+                    self.body.image = assets.image(
                         "tank_corps_purple_dmg{}.png"
                         .format(self.n_shots))
                     self.body.base_image = self.body.image
@@ -404,7 +404,7 @@ class Spawner(pygame.sprite.Sprite):
                  spawned_body_name="tank_corps_spawned.png",
                  spawned_canon_name="canon_spawned.png"):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = loaders.image_with_rect(sprite_name)
+        self.image, self.rect = assets.image_with_rect(sprite_name)
         self.base_image = self.image
         self.area = pygame.display.get_surface().get_rect()
         self.rect.center = pos
@@ -417,7 +417,7 @@ class Spawner(pygame.sprite.Sprite):
         self.alive = True
         self.spawned = False
         # ^True if an AI spawned by this spawner is still alive
-        self.destroyedSound = loaders.sound("destroyed_sound.wav")
+        self.destroyedSound = assets.sound("destroyed_sound.wav")
         self.destroyedSound.set_volume(utils.get_volume('fx'))
         self.init_trigger()
 
@@ -449,7 +449,7 @@ class Spawner(pygame.sprite.Sprite):
                 if self.n_shots == self.max_shots:
                     self.alive = False
                 else:
-                    self.image = loaders.image("spawner_dmg{}.png"
+                    self.image = assets.image("spawner_dmg{}.png"
                                                .format(self.n_shots))
         screen = pygame.display.get_surface()
         screen.blit(self.image, self.rect)

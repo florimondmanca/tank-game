@@ -6,7 +6,7 @@
 import pygame
 import sys
 import os
-from . import loaders
+from . import assets
 join = os.path.join
 
 # chemin d'accès aux fichiers
@@ -24,7 +24,7 @@ def options_menu():
     pygame.font.init()
     size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    clickSound = loaders.sound("click_sound.wav")
+    clickSound = assets.sound("click_sound.wav")
     background = utils.Background(-1)
     screen.blit(background.image, (0, 0))
     pygame.mouse.set_visible(False)
@@ -33,9 +33,9 @@ def options_menu():
     clock = pygame.time.Clock()
     var = 1
 
-    font_big = loaders.font(size=36)
-    font_medium = loaders.font(size=20)
-    font_small = loaders.font(size=14)
+    font_big = assets.font(size=36)
+    font_medium = assets.font(size=20)
+    font_small = assets.font(size=14)
 
     titre = font_big.render("OPTIONS", (30, 30, 30))
     titrepos = titre.get_rect(centerx=512, centery=50)

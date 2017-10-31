@@ -7,7 +7,7 @@ from pygame.locals import *
 import os
 import sys
 
-from . import loaders
+from . import assets
 
 join = os.path.join
 path = os.getcwd()
@@ -20,9 +20,9 @@ def update_music_menu():
     if not pygame.mixer.music.get_busy():  # if no music is being played
         v = get_volume('music')
         if sys.platform == "win32":
-            loaders.music('MenuTheme.ogg', volume=v)
+            assets.music('MenuTheme.ogg', volume=v)
         else:
-            loaders.music('MenuTheme.wav', volume=v)
+            assets.music('MenuTheme.wav', volume=v)
         pygame.mixer.music.play(-1)
 
 
@@ -189,6 +189,6 @@ class Background:
     def __init__(self, nlevel=-1, custom=False):
         # nlevel : the identifier of the loaded level. -1 for menus.
         if nlevel == -1 or (nlevel >= 20 and not custom):
-            self.image = loaders.image('background_menu.png')
+            self.image = assets.image('background_menu.png')
         else:
-            self.image = loaders.image('background.png')
+            self.image = assets.image('background.png')
