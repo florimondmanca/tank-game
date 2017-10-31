@@ -44,16 +44,16 @@ def level_selection_menu():
     running = 1
     buttons = []
     unlocked = get_unlocked()  # unlocked levels
-    font_big = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
-    font_medium = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 18)
-    font_buttons = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 20)
+    font_big = loaders.font(size=36)
+    font_medium = loaders.font(size=18)
+    font_buttons = loaders.font(size=20)
 
-    title = font_big.render("Select a level", 1, (30, 30, 30))
+    title = font_big.render("Select a level", (30, 30, 30))
     titlepos = title.get_rect(centerx=512, centery=50)
 
     back = utils.Button("Back", font_big, 512, 590, (200, 0, 0))
     help_msg = font_medium.render(
-        "You can only select levels you've unlocked. To unlock a level, beat all the previous ones.", 1, (69, 52, 16))
+        "You can only select levels you've unlocked. To unlock a level, beat all the previous ones.", (69, 52, 16))
     msgpos = help_msg.get_rect(centerx=512, centery=620)
 
     # load the buttons

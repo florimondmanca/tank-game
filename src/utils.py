@@ -111,7 +111,7 @@ class Button:
     def __init__(self, text, font, x, y, color):
         self.text = text  # string
         self.font = font  # SysFont object
-        self.rect = font.render(text, 1, color).get_rect()
+        self.rect = font.render(text, color).get_rect()
         self.rect.center = (x, y)
         self.highlighten = False
         self.color = color  # RGB: (r, g, b)
@@ -126,7 +126,7 @@ class Button:
             if not self.rect.collidepoint(x, y):
                 self.highlighten = False
         color = self.highlight()
-        text = self.font.render(self.text, 1, color)
+        text = self.font.render(self.text, color)
         screen.blit(text, self.rect)
 
     def highlight(self):
@@ -146,7 +146,7 @@ class SlideButton(Button):
 
     def __init__(self, text, font, x, y, color):
         Button.__init__(self, text, font, x, y, color)
-        self.rect = font.render(text, 1, color).get_rect()
+        self.rect = font.render(text, color).get_rect()
         self.rect.bottom += 50
         self.rect.centerx, self.rect.top = get_size()[0] // 2, y
         self.cursorx = x
@@ -168,7 +168,7 @@ class SlideButton(Button):
             if not self.cursorrect.collidepoint(x, y):
                 self.highlighten = False
         color = self.highlight()
-        texte = self.font.render(self.text, 1, self.color)
+        texte = self.font.render(self.text, self.color)
         screen.blit(texte, self.textrect)
         if self.bound and abs(x0 - x) <= 200:
             self.cursorrect.centerx = x

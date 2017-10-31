@@ -83,10 +83,27 @@ class SoundAssetLoader(AssetLoader):
     search_dirs = settings.SOUND_DIRS
 
     @classmethod
-    def get_asset(cls, file_path, volume=1):
+    def get_asset(cls, file_path, *, volume=1):
         sound = pygame.mixer.Sound(file_path)
         sound.set_volume(volume)
         return sound
+
+
+def sound(filename, *, volume=1):
+    """Load a sound.
+
+    Searches for the sound in the SOUND_DIRS from the settings.py file.
+    If sound is not found, raises a FileNotFound exception.
+
+    Parameters
+    ----------
+    filename : str
+        The sound's file name, e.g. 'click_sound.wav'.
+    volume : float, optional
+        The sound's volume, between 0 and 1.
+        Default is 1.
+    """
+    return SoundAssetLoader.load(filename, volume=volume)
 
 
 class ImageAssetLoader(AssetLoader):
@@ -96,7 +113,7 @@ class ImageAssetLoader(AssetLoader):
     search_dirs = settings.IMG_DIRS
 
     @classmethod
-    def get_asset(cls, file_path, alpha=None):
+    def get_asset(cls, file_path, *, alpha=None):
         image = pygame.image.load(file_path)
         if alpha is None:
             alpha = image.get_alpha() is not None
@@ -105,21 +122,6 @@ class ImageAssetLoader(AssetLoader):
         else:
             image = image.convert()
         return image
-
-
-class MusicAssetLoader(AssetLoader):
-    """Music loader."""
-
-    asset_type = 'music'
-    search_dirs = settings.MUSIC_DIRS
-
-    @classmethod
-    def get_asset(cls, file_path, volume=1, **kwargs):
-        if not pygame.mixer.get_init():
-            pygame.mixer.pre_init(**kwargs)
-            pygame.mixer.init()
-        pygame.mixer.music.load(file_path)
-        pygame.mixer.music.set_volume(volume)
 
 
 def image(filename, *, alpha=None):
@@ -138,8 +140,7 @@ def image(filename, *, alpha=None):
         Pass True or False to explicitly define if the image has alpha channel.
         Default is to derive it from the surface's get_alpha() value.
     """
-    _image = ImageAssetLoader.load(filename)
-    return _image
+    return ImageAssetLoader.load(filename)
 
 
 def image_with_rect(filename, *, alpha=None):
@@ -162,35 +163,86 @@ def image_with_rect(filename, *, alpha=None):
     return _image, _image.get_rect()
 
 
-def sound(filename, volume=1):
-    """Load a sound.
+class MusicAssetLoader(AssetLoader):
+    """Music loader."""
 
-    Searches for the sound in the SOUND_DIRS from the settings.py file.
-    If sound is not found, raises a FileNotFound exception.
+    asset_type = 'music'
+    search_dirs = settings.MUSIC_DIRS
 
-    Parameters
-    ----------
-    filename : str
-        The sound's file name, e.g. 'click_sound.wav'.
-    volume : float
-        The sound's volume, between 0 and 1.
-    """
-    return SoundAssetLoader.load(filename, volume=volume)
+    @classmethod
+    def get_asset(cls, file_path, *, volume=1, **kwargs):
+        if not pygame.mixer.get_init():
+            pygame.mixer.pre_init(**kwargs)
+            pygame.mixer.init()
+        pygame.mixer.music.load(file_path)
+        pygame.mixer.music.set_volume(volume)
 
 
-def music(filename, volume=1):
+def music(filename, *, volume=1):
     """Load a music in the pygame mixer.
 
     Parameters
     ----------
     filename : str
         The music's file name, e.g. 'main_theme.wav'.
-    volume : float
+    volume : float, optional
         Set the playback volume to this value
     """
     return MusicAssetLoader.load(filename, volume=volume)
 
 
-def load_font(*, name=None, size=12):
-    # TODO
-    pass
+class FontAssetLoader(AssetLoader):
+    """Font Loader."""
+
+    asset_type = 'font'
+    search_dirs = settings.FONT_DIRS
+
+    class Font(pygame.font.Font):
+        """Subclass of pygame.font.Font.
+
+        Redefines the render() function with sensible defaults.
+        """
+
+        def render(self, text, color=None, background=None, antialias=True):
+            """Render the font.
+
+            Redefinition of Pygame's font.Font.render function, only with
+            sensible defaults and keyword arguments.
+
+            Parameters
+            ----------
+            text : str
+                The text to render.
+            color : RGB tuple, optional
+                Default is black (0, 0, 0).
+            background : RGB tuple
+                Default is None.
+            antialias : bool, optional
+                Default is True.
+            """
+            if color is None:
+                color = (0, 0, 0)
+            return super().render(text, antialias, color, background)
+
+    @classmethod
+    def get_asset(cls, file_path, *, size=20):
+        return FontAssetLoader.Font(file_path, size)
+
+
+def font(filename=None, *, size=20):
+    """Load a font.
+
+    Return a pygame.font.Font object.
+
+    Parameters
+    ----------
+    filename : str, optional
+        The font's file name, e.g. 'myfont.otf'.
+        Default is settings.DEFAULT_FONT
+    size : int, optional
+        The font size, in pixels.
+        Default is 20.
+    """
+    if filename is None:
+        filename = settings.DEFAULT_FONT
+    return FontAssetLoader.load(filename, size=size)

@@ -34,7 +34,7 @@ def run_game():
 
     size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    pygame.display.set_caption(settings.WINDOW_CAPTION)
+    pygame.display.set_caption(settings.GAME_NAME)
     walls_group, pits_group, pos_joueur, pos_IA, blah = get_level(
         MAIN_PATH, -1)
     icon = loaders.image(settings.WINDOW_ICON_IMAGE)
@@ -78,11 +78,10 @@ def run_game():
     clock = pygame.time.Clock()
     running = 1
 
-    font = pygame.font.Font(join(MAIN_PATH, join("fonts", "BOMBARD.ttf")), 36)
-    bigfont = pygame.font.Font(join(MAIN_PATH,
-                                    join("fonts", "BOMBARD.ttf")), 72)
+    font = loaders.font(size=36)
+    bigfont = loaders.font(size=72)
 
-    title = bigfont.render("TANK GAME", 1, (30, 30, 30))
+    title = bigfont.render('TANK GAME', color=(30, 30, 30))
     titlepos = title.get_rect(centerx=512, centery=100)
 
     start_game = utils.Button("Start Game", font, 512, 200, (200, 0, 0))
@@ -92,7 +91,7 @@ def run_game():
     options = utils.Button("Options", font, 512, 500, (200, 0, 0))
 
     while running:
-        clock.tick(60)  # on maximise le fps à 60
+        clock.tick(60)  # limit FPS to 60
         screen.blit(background.image, (0, 0))
         screen.blit(title, titlepos)
         start_game.update()
@@ -139,7 +138,7 @@ def run_game():
                         result = main(n)
                     if not pygame.mixer.get_init():
                         return
-                    pygame.display.set_caption("Tank Game")
+                    pygame.display.set_caption(settings.GAME_NAME)
 
                 # player clicked on "Level Selection"
                 elif level_select.highlighten:
@@ -148,7 +147,7 @@ def run_game():
                         running = 0
                         pygame.quit()
                     else:
-                        pygame.display.set_caption("Tank Game")
+                        pygame.display.set_caption(settings.GAME_NAME)
 
                 # player clicked on "Level Editor"
                 elif editor.highlighten and sys.platform == "wind32":

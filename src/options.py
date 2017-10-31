@@ -33,30 +33,30 @@ def options_menu():
     clock = pygame.time.Clock()
     var = 1
 
-    font1 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
-    font2 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 20)
-    font3 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 14)
+    font_big = loaders.font(size=36)
+    font_medium = loaders.font(size=20)
+    font_small = loaders.font(size=14)
 
-    titre = font1.render("OPTIONS", 1, (30, 30, 30))
+    titre = font_big.render("OPTIONS", (30, 30, 30))
     titrepos = titre.get_rect(centerx=512, centery=50)
-    back = utils.Button("Back", font1, 512, 400, (200, 0, 0))
-    credits = font2.render(
-        "Developped by Guillaume Coiffier & Florimond Manca, 2015",
-        1, (30, 30, 30))
+    back = utils.Button("Back", font_big, 512, 400, (200, 0, 0))
+    credits = font_medium.render(
+        "Developed by Guillaume Coiffier & Florimond Manca, 2015",
+        (30, 30, 30))
     creditspos = credits.get_rect(centerx=512, centery=640)
 
     mv, fxv = utils.get_volumes().values()
     x1 = 312 + 400 * mv
     x2 = 312 + 400 * fxv
     music_button = utils.SlideButton("Music",
-                                     font2, x1, 200, (200, 0, 0))
+                                     font_medium, x1, 200, (200, 0, 0))
     noise_button = utils.SlideButton("Sound Effects",
-                                     font2, x2, 300, (200, 0, 0))
+                                     font_medium, x2, 300, (200, 0, 0))
 
     buttons = [music_button, noise_button]
     numbers = []
-    zero = font3.render("0", 1, (0, 0, 0))
-    cent = font3.render("100", 1, (0, 0, 0))
+    zero = font_small.render('0')
+    cent = font_small.render('100')
     numbers = [(zero, zero.get_rect(centerx=312, centery=170)),
                (zero, zero.get_rect(centerx=312, centery=270)),
                (cent, cent.get_rect(centerx=712, centery=170)),

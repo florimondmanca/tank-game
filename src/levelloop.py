@@ -24,7 +24,7 @@ def pause(screen, player, background, walls_group, AI_group, bullets_group,
     """Pause loop."""
     global clickSound
     paused = True
-    font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
+    font = loaders.font(size=36)
     resume = utils.Button("Resume Game", font, 512, 200, (200, 0, 0))
     exit = utils.Button("Return to Menu", font, 512, 300, (200, 0, 0))
 
@@ -83,10 +83,10 @@ def dead_menu(screen, player, background, walls_group, AI_group, bullets_group,
     """Dead menu loop."""
     global clickSound
     paused = True
-    font1 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
+    font1 = loaders.font(size=36)
     recommencer = utils.Button("Try Again", font1, 512, 220, (200, 0, 0))
     quitter = utils.Button("Return to Menu", font1, 512, 350, (200, 0, 0))
-    font2 = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 50)
+    font2 = loaders.font(size=50)
     you_died = font2.render("You died!", 1, (200, 0, 0))
     you_died_pos = you_died.get_rect(centerx=512, centery=150)
     cursor = Cursor()
@@ -155,12 +155,9 @@ def main(n, custom=False, start=False, from_selection=False):
     curseur = Cursor()
     walls_pits = pygame.sprite.Group()
     unlocked = get_unlocked()  # les niveaux disponibles
-    font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 36)
-    # recommencer = utils.Button("Try again", font,
-    #                            512 - 200, 200, (200, 0, 0))
-    # quitter = utils.Button("Back to menu", font, 512 + 200, 200, (200, 0, 0))
+    font = loaders.font(size=36)
     clickSound = loaders.sound("click_sound.wav")
-    v = utils.get_volume('music')
+    v = utils.get_volume('fx')
 
     # Si on a lancé le niveau depuis le menu (pas de changement de musique
     # lors de l'enchainement de deux niveaux
@@ -179,22 +176,22 @@ def main(n, custom=False, start=False, from_selection=False):
     background = utils.Background(n, custom)
 
     pygame.font.init()
-    font = pygame.font.Font(join(path, join("fonts", "BOMBARD.ttf")), 18)
+    font = loaders.font(size=18)
     if (n == 1 or n == 2) and not custom:
         if n == 1:
             help_msg1 = font.render("Use the mouse to control your cannon",
-                                    1, (69, 52, 16))
+                                    (69, 52, 16))
             msgpos1 = help_msg1.get_rect(centerx=800, centery=600)
             help_msg2 = font.render("and press left click to fire a bullet.",
-                                    1, (69, 52, 16))
+                                    (69, 52, 16))
             msgpos2 = help_msg2.get_rect(centerx=800, centery=630)
         else:
             help_msg1 = font.render(
                 "Use Z,Q,S,D or up, down, left and right to move.",
-                1, (69, 52, 16))
+                (69, 52, 16))
             msgpos1 = help_msg1.get_rect(centerx=700, centery=600)
             help_msg2 = font.render("Press ESC to pause at any moment.",
-                                    1, (69, 52, 16))
+                                    (69, 52, 16))
             msgpos2 = help_msg2.get_rect(centerx=800, centery=630)
 
     player = Player(pos_joueur)
@@ -249,7 +246,7 @@ def main(n, custom=False, start=False, from_selection=False):
         deadTheme = loaders.sound("DeadTheme.wav")
         deadTheme.set_volume(v)
     has_begun = False
-    begin_msg = font.render("CLICK TO BEGIN !", 2, (200, 0, 0))
+    begin_msg = font.render("CLICK TO BEGIN !", (200, 0, 0))
     begin_msg_rect = begin_msg.get_rect(centerx=player.body.rect.centerx,
                                         centery=player.body.rect.centery - 50)
 
