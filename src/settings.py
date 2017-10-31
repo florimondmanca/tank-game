@@ -14,3 +14,8 @@ MUSIC_DIRS = ['music']
 DEFAULT_TANK_BODY_IMAGE = "tank_corps_regular.png"
 DEFAULT_TANK_CANON_IMAGE = "canon_regular.png"
 DEFAULT_TANK_FIRE_SOUND = "shot_sound.wav"
+
+DEFAULT_CLICK_SOUND = 'click_sound.wav'
+
+WINDOW_CAPTION = "Tank Game"
+WINDOW_ICON_IMAGE = 'tank.png'

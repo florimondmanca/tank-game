@@ -1,9 +1,4 @@
-# Tank Game:
-# A game with tanks and stuff.
-#
-# by Erkalys & Florimond Manca
-#
-# Menu loop
+"""Main menu loop."""
 
 
 # Imports
@@ -12,42 +7,38 @@ import pygame
 import sys
 import os
 from . import loaders
-join = os.path.join
-
-if sys.platform == "win32":  # si sous windows,
-    # on a besoin de ce module pour le standalone
-    import pygame._view
-
-# chemin d'accès aux fichiers
-
-MAIN_PATH = os.getcwd()
-if MAIN_PATH not in sys.path:
-    sys.path.append(MAIN_PATH)
-
-from src import utils
-from src.bullet_cursor import Cursor
-from src.aiplayer import YellowAI, YellowPlusAI, BlueAI, BluePlusAI, RedAI, \
+from . import utils
+from . import settings
+from .bullet_cursor import Cursor
+from .aiplayer import YellowAI, YellowPlusAI, BlueAI, BluePlusAI, RedAI, \
     RedPlusAI, PurpleAI, PurplePlusAI
-from src.levelloop import main
-from src.importation import get_level
-from src.levelselection import level_selection_menu
-from src.options import options_menu
+from .levelloop import main
+from .importation import get_level
+from .levelselection import level_selection_menu
+from .options import options_menu
 import src.leveleditor as Level_Editor
+
+# if sys.platform == "win32":
+#     import pygame._view
+
+join = os.path.join
+MAIN_PATH = os.getcwd()
 
 
 def run_game():
+    """Main game loop."""
     pygame.init()
     utils.update_music_menu()
-    clickSound = loaders.sound("click_sound.wav")
+    clickSound = loaders.sound(settings.DEFAULT_CLICK_SOUND)
     pygame.font.init()  # module de pygame qui gère le texte
 
     size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    pygame.display.set_caption("Tank Game")
+    pygame.display.set_caption(settings.WINDOW_CAPTION)
     walls_group, pits_group, pos_joueur, pos_IA, blah = get_level(
         MAIN_PATH, -1)
-    icone = pygame.image.load(join(join(MAIN_PATH, 'images'), 'tank.png'))
-    pygame.display.set_icon(icone)
+    icon = loaders.image(settings.WINDOW_ICON_IMAGE)
+    pygame.display.set_icon(icon)
 
     # get the AI data
     AI_group = []
