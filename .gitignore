@@ -3,6 +3,7 @@ __pycache__/
 .eggs/
 dist/
 build/
+env/
 
 DeadTheme.wav
 MainTheme.wav
