@@ -11,6 +11,7 @@ from src.bullet_cursor import Cursor
 from src.levelloop import main
 from src.importation import get_unlocked
 from .assets import get_font
+from . import settings
 
 # File access path
 join = os.path.join
@@ -27,7 +28,7 @@ def level_selection_menu():
     """Menu where the player can select levels, either normal or custom."""
     # some initialization
     pygame.font.init()  # pygame module for managing fonts
-    size = utils.get_size()
+    size = settings.WINDOW_SIZE
     screen = pygame.display.set_mode(size)
     background = utils.Background(nlevel=-1)
     screen.blit(background.image, (0, 0))

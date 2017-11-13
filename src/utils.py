@@ -68,11 +68,6 @@ def get_volume(parameter):
     volumes = get_volumes()
     return volumes[parameter]
 
-
-def get_size():  # default Tank Game window size
-    return (1024, 672)
-
-
 # A* functions
 
 
@@ -99,9 +94,10 @@ def get_neighbors(obstacles, x):
 
 
 def clean(a_list):
-    """Removes the unnecessary (x, y) points of a list.
+    """Remove the unnecessary (x, y) points of a list.
 
-    Only points that forms a corner of the path are necessary."""
+    Only points that forms a corner of the path are necessary.
+    """
     new_list = [x for x in a_list]
     popped = 0
     for i in range(1, len(a_list) - 1):
@@ -152,16 +148,21 @@ class Button:
     def on_click(self):
         pass
 
+    def on_release(self):
+        pass
+
 
 class SlideButton(Button):
-    """SlideButton : a sliding button, heritates from Button.
-    Useful in the "options" menu."""
+    """A sliding button, heritates from Button.
+
+    Useful in the "options" menu.
+    """
 
     def __init__(self, text, font, x, y, color):
         Button.__init__(self, text, font, x, y, color)
         self.rect = font.render(text, 1, color).get_rect()
         self.rect.bottom += 50
-        self.rect.centerx, self.rect.top = get_size()[0] // 2, y
+        self.rect.centerx, self.rect.top = settings.WINDOW_SIZE[0] // 2, y
         self.cursorx = x
         self.cursorrect = pygame.rect.Rect(x - 3, self.rect.bottom - 50, 6, 20)
         self.textrect = pygame.rect.Rect(
@@ -170,11 +171,11 @@ class SlideButton(Button):
         self.bound = False
 
     def update(self):
-        x0 = get_size()[0] // 2
+        x0 = settings.WINDOW_SIZE[0] // 2
         screen = pygame.display.get_surface()
         y0 = self.rect.bottom - 40
-        line = pygame.draw.line(screen,
-                                (0, 0, 0), (x0 - 200, y0), (x0 + 200, y0))
+        pygame.draw.line(screen,
+                         (0, 0, 0), (x0 - 200, y0), (x0 + 200, y0))
         x, y = pygame.mouse.get_pos()
         if not self.hover:
             if self.cursorrect.collidepoint(x, y):
