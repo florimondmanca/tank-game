@@ -4,15 +4,13 @@
 # Imports
 
 import pygame
-from pygame.locals import *
-from pygame.font import *
+from pygame_assets import load
 import os
 from src import utils
 from src.bullet_cursor import Cursor
-from src.aiplayer import *
 from src.levelloop import main
 from src.importation import get_unlocked
-from . import assets
+from .assets import get_font
 
 # File access path
 join = os.path.join
@@ -20,13 +18,13 @@ path = os.getcwd()
 
 
 def button_update(buttons):
+    """Shortcut to update all buttons."""
     for b in buttons:
         b.update()
 
 
 def level_selection_menu():
-    """level_selection_menu(): launches the menu where the player can select
-    levels, either normal or custom ones."""
+    """Menu where the player can select levels, either normal or custom."""
     # some initialization
     pygame.font.init()  # pygame module for managing fonts
     size = utils.get_size()
@@ -38,29 +36,30 @@ def level_selection_menu():
     pygame.mouse.set_visible(False)
     curseur = Cursor()
 
-    clickSound = assets.sound("click_sound.wav")
+    clickSound = load.sound("click_sound.wav")
 
     clock = pygame.time.Clock()
     running = 1
     buttons = []
     unlocked = get_unlocked()  # unlocked levels
-    font_big = assets.font(size=36)
-    font_medium = assets.font(size=18)
-    font_buttons = assets.font(size=20)
+    font_big = get_font(36)
+    font_medium = get_font(18)
+    font_buttons = get_font(20)
 
-    title = font_big.render("Select a level", (30, 30, 30))
+    title = font_big.render("Select a level", 1, (30, 30, 30))
     titlepos = title.get_rect(centerx=512, centery=50)
 
     back = utils.Button("Back", font_big, 512, 590, (200, 0, 0))
     help_msg = font_medium.render(
         "You can only select levels you've unlocked. "
-        "To unlock a level, beat all the previous ones.", (69, 52, 16))
+        "To unlock a level, beat all the previous ones.", 1, (69, 52, 16))
     msgpos = help_msg.get_rect(centerx=512, centery=620)
 
     # load the buttons
     n, i, j = 1, 0, 0
     # first the buttons for the default levels
-    while os.path.exists(join(join(path, "levels"), "level" + str(n) + ".txt")):
+    while os.path.exists(join(join(path, "levels"),
+                              "level" + str(n) + ".txt")):
         if i > 500:
             i = 0
             j += 50
@@ -73,7 +72,8 @@ def level_selection_menu():
     m, i, j = 1, 0, 0
 
     # on charge les boutons des niveaux customs
-    while os.path.exists(join(join(path, "custom_levels"), "custom_level{}.txt".format(m))):
+    while os.path.exists(join(join(path, "custom_levels"),
+                              "custom_level{}.txt".format(m))):
         if i > 500:
             i = 0
             j += 50
@@ -98,21 +98,22 @@ def level_selection_menu():
         pygame.display.flip()
         # deal with the events
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 clickSound.play()
                 pygame.mixer.music.fadeout(200)
                 clock.tick(5)
                 running = 0
                 return False
-            elif event.type == MOUSEBUTTONDOWN and event.button == 1:
-                if back.highlighten:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if back.hover:
                     clickSound.play()
                     running = 0
                     return True
                 else:
                     for i, button in enumerate(buttons):
-                        if button.highlighten:
-                            if i >= n_customs:  # si le niveau est un niveau custom :
+                        if button.hover:
+                            if i >= n_customs:
+                                # si le niveau est un niveau custom
                                 clickSound.play()
                                 pygame.mixer.music.fadeout(200)
                                 clock.tick(5)
@@ -126,11 +127,13 @@ def level_selection_menu():
                                     clickSound.play()
                                     pygame.mixer.music.fadeout(200)
                                     clock.tick(5)
-                                    if main(i + 1, custom=False, start=True, from_selection=True):
+                                    if main(i + 1, custom=False, start=True,
+                                            from_selection=True):
                                         unlocked = get_unlocked()
                                     if not pygame.mixer.get_init():
                                         return False
                                     pygame.display.set_caption("Tank Game")
+
 
 if __name__ == '__main__':
     level_selection_menu()

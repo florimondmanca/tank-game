@@ -11,7 +11,9 @@ from .bullet_cursor import Cursor
 from .aiplayer import Player, YellowAI, YellowPlusAI, BlueAI, BluePlusAI, \
     RedAI, RedPlusAI, PurpleAI, PurplePlusAI, Spawner, SpawnerPlus
 from .importation import get_level, get_unlocked, overwrite_unlocked
-from . import assets
+
+from pygame_assets import load
+from .assets import get_font
 
 join = os.path.join
 path = os.getcwd()
@@ -24,7 +26,7 @@ def pause(screen, player, background, walls_group, AI_group, bullets_group,
     """Pause loop."""
     global clickSound
     paused = True
-    font = assets.font(size=36)
+    font = get_font(36)
     resume = utils.Button("Resume Game", font, 512, 200, (200, 0, 0))
     exit = utils.Button("Return to Menu", font, 512, 300, (200, 0, 0))
 
@@ -59,11 +61,11 @@ def pause(screen, player, background, walls_group, AI_group, bullets_group,
 
         for event in pygame.event.get():
             if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and
-                    resume.highlighten):
+                    resume.hover):
                 clickSound.play()
                 return False
             if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and
-                    exit.highlighten):
+                    exit.hover):
                 clickSound.play()
                 return True
             if event.type == pygame.QUIT:  # le player choisit de quitter
@@ -83,15 +85,15 @@ def dead_menu(screen, player, background, walls_group, AI_group, bullets_group,
     """Dead menu loop."""
     global clickSound
     paused = True
-    font1 = assets.font(size=36)
+    font1 = get_font(36)
     recommencer = utils.Button("Try Again", font1, 512, 220, (200, 0, 0))
     quitter = utils.Button("Return to Menu", font1, 512, 350, (200, 0, 0))
-    font2 = assets.font(size=50)
+    font2 = get_font(50)
     you_died = font2.render("You died!", 1, (200, 0, 0))
     you_died_pos = you_died.get_rect(centerx=512, centery=150)
     cursor = Cursor()
     c = pygame.time.Clock()
-    deadimg = assets.image('tank_destroyed.png')
+    deadimg = load.image('tank_destroyed.png')
 
     while paused:
         c.tick(60)
@@ -120,12 +122,12 @@ def dead_menu(screen, player, background, walls_group, AI_group, bullets_group,
 
         for event in pygame.event.get():
             if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and
-                    recommencer.highlighten):
+                    recommencer.hover):
                 clickSound.play()
                 pygame.mixer.fadeout(200)
                 return True
             if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and
-                    quitter.highlighten):
+                    quitter.hover):
                 clickSound.play()
                 pygame.mixer.music.fadeout(200)
                 return False
@@ -155,17 +157,17 @@ def main(n, custom=False, start=False, from_selection=False):
     curseur = Cursor()
     walls_pits = pygame.sprite.Group()
     unlocked = get_unlocked()  # les niveaux disponibles
-    font = assets.font(size=36)
-    clickSound = assets.sound("click_sound.wav")
+    font = get_font(36)
+    clickSound = load.sound("click_sound.wav")
     v = utils.get_volume('music')
 
     # Si on a lancé le niveau depuis le menu (pas de changement de musique
     # lors de l'enchainement de deux niveaux
     if start:
         if sys.platform == "win32":
-            assets.music('MainTheme.ogg', volume=v)
+            load.music('MainTheme.ogg', volume=v)
         else:
-            assets.music('MainTheme.wav', volume=v)
+            load.music('MainTheme.wav', volume=v)
         pygame.mixer.music.play(-1)
 
     for elt in walls_group:
@@ -176,22 +178,22 @@ def main(n, custom=False, start=False, from_selection=False):
     background = utils.Background(n, custom)
 
     pygame.font.init()
-    font = assets.font(size=18)
+    font = get_font(18)
     if (n == 1 or n == 2) and not custom:
         if n == 1:
-            help_msg1 = font.render("Use the mouse to control your cannon",
+            help_msg1 = font.render("Use the mouse to control your cannon", 1,
                                     (69, 52, 16))
             msgpos1 = help_msg1.get_rect(centerx=800, centery=600)
             help_msg2 = font.render("and press left click to fire a bullet.",
-                                    (69, 52, 16))
+                                    1, (69, 52, 16))
             msgpos2 = help_msg2.get_rect(centerx=800, centery=630)
         else:
             help_msg1 = font.render(
-                "Use Z,Q,S,D or up, down, left and right to move.",
+                "Use Z,Q,S,D or up, down, left and right to move.", 1,
                 (69, 52, 16))
             msgpos1 = help_msg1.get_rect(centerx=700, centery=600)
             help_msg2 = font.render("Press ESC to pause at any moment.",
-                                    (69, 52, 16))
+                                    1, (69, 52, 16))
             msgpos2 = help_msg2.get_rect(centerx=800, centery=630)
 
     player = Player(pos_joueur)
@@ -238,14 +240,13 @@ def main(n, custom=False, start=False, from_selection=False):
 
     RUNNING = 1  # variable de boucle
     # On lance la boucle de jeu
-    chemin_musique = join(path, "music")
     if sys.platform == "win32":
-        deadTheme = assets.sound("DeadTheme.ogg")
+        deadTheme = load.sound("DeadTheme.ogg")
     else:
-        deadTheme = assets.sound("DeadTheme.wav")
+        deadTheme = load.sound("DeadTheme.wav")
         deadTheme.set_volume(v)
     has_begun = False
-    begin_msg = font.render("CLICK TO BEGIN !", (200, 0, 0))
+    begin_msg = font.render("CLICK TO BEGIN !", 1, (200, 0, 0))
     begin_msg_rect = begin_msg.get_rect(centerx=player.body.rect.centerx,
                                         centery=player.body.rect.centery - 50)
 
@@ -333,7 +334,7 @@ def main(n, custom=False, start=False, from_selection=False):
                                 bullets_group.add(bullet)
                     else:
                         (x, y) = IA.body.rect.center
-                        IA.body.image, IA.body.rect = assets.image_with_rect(
+                        IA.body.image, IA.body.rect = load.image_with_rect(
                             'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
@@ -349,7 +350,7 @@ def main(n, custom=False, start=False, from_selection=False):
                                 bullets_group.add(bullet)
                     else:
                         (x, y) = IA.body.rect.center
-                        IA.body.image, IA.body.rect = assets.image_with_rect(
+                        IA.body.image, IA.body.rect = load.image_with_rect(
                             'tank_destroyed.png')
                         IA.body.rect.center = (x, y)
                         all_dead_AI.append(IA)
@@ -365,7 +366,7 @@ def main(n, custom=False, start=False, from_selection=False):
                     else:
                         all_spawners.remove(spawner)
                         center = spawner.rect.center
-                        spawner.image, spawner.rect = assets.image_with_rect(
+                        spawner.image, spawner.rect = load.image_with_rect(
                             'spawner_destroyed.png')
                         spawner.rect.center = center
                         all_dead_spawners.append(spawner)

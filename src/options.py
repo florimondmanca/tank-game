@@ -6,10 +6,9 @@
 import pygame
 import sys
 import os
-from . import assets
+from pygame_assets import load
+from .assets import get_font
 join = os.path.join
-
-# chemin d'accès aux fichiers
 
 path = os.getcwd()
 if path not in sys.path:
@@ -24,7 +23,7 @@ def options_menu():
     pygame.font.init()
     size = utils.get_size()
     screen = pygame.display.set_mode(size)
-    clickSound = assets.sound("click_sound.wav")
+    clickSound = load.sound("click_sound.wav")
     background = utils.Background(-1)
     screen.blit(background.image, (0, 0))
     pygame.mouse.set_visible(False)
@@ -33,15 +32,15 @@ def options_menu():
     clock = pygame.time.Clock()
     var = 1
 
-    font_big = assets.font(size=36)
-    font_medium = assets.font(size=20)
-    font_small = assets.font(size=14)
+    font_big = get_font(36)
+    font_medium = get_font(20)
+    font_small = get_font(14)
 
-    titre = font_big.render("OPTIONS", (30, 30, 30))
-    titrepos = titre.get_rect(centerx=512, centery=50)
+    title = font_big.render("OPTIONS", 1, (30, 30, 30))
+    titlepos = title.get_rect(centerx=512, centery=50)
     back = utils.Button("Back", font_big, 512, 400, (200, 0, 0))
     credits = font_medium.render(
-        "Developed by Guillaume Coiffier & Florimond Manca, 2015",
+        "Developed by Guillaume Coiffier & Florimond Manca, 2015", 1,
         (30, 30, 30))
     creditspos = credits.get_rect(centerx=512, centery=640)
 
@@ -55,8 +54,8 @@ def options_menu():
 
     buttons = [music_button, noise_button]
     numbers = []
-    zero = font_small.render('0')
-    cent = font_small.render('100')
+    zero = font_small.render('0', 1, (0, 0, 0))
+    cent = font_small.render('100', 1, (0, 0, 0))
     numbers = [(zero, zero.get_rect(centerx=312, centery=170)),
                (zero, zero.get_rect(centerx=312, centery=270)),
                (cent, cent.get_rect(centerx=712, centery=170)),
@@ -73,12 +72,12 @@ def options_menu():
                 pygame.quit()
                 return False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if back.highlighten:
+                if back.hover:
                     clickSound.play()
                     return True
                 else:
                     for b in buttons:
-                        if b.highlighten:
+                        if b.hover:
                             clickSound.play()
                             b.bind()
                             break
@@ -95,7 +94,7 @@ def options_menu():
                 pygame.mixer.music.set_volume(utils.get_volume('music'))
 
         screen.blit(background.image, (0, 0))
-        screen.blit(titre, titrepos)
+        screen.blit(title, titlepos)
         back.update()
         for button in buttons:
             button.update()

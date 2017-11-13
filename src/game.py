@@ -4,7 +4,8 @@ import sys
 
 import pygame
 
-from . import assets, settings, utils
+from . import settings
+from . import utils
 from .importation import get_level
 from .aiplayer import load_ai
 from .bullet_cursor import Cursor
@@ -12,28 +13,36 @@ from .levelloop import main as level_main
 from .levelselection import level_selection_menu
 from .leveleditor import level_editor
 from .options import options_menu
+from .assets import get_font, get_icon, get_click_sound
 
 
 class Game:
     """Main game class."""
 
+    fps = 60
+
     def __init__(self):
         pygame.init()
         pygame.font.init()
+        # init display
         self.screen = pygame.display.set_mode(settings.WINDOW_SIZE)
         pygame.display.set_caption(settings.GAME_NAME)
-        icon = assets.image(settings.WINDOW_ICON_IMAGE)
-        pygame.display.set_icon(icon)
-        self.sounds = {}
-        self.buttons = []
+        pygame.display.set_icon(get_icon())
+        # init cursor
         pygame.mouse.set_visible(False)
         self.cursor = Cursor()
+        # init game containers
+        self.sounds = {}
+        self.buttons = []
+        self.ai_tanks = []
+        # init background
         self.background = utils.Background(-1)
         self.screen.blit(self.background.image, (0, 0))
+        # init clock
         self.clock = pygame.time.Clock()
-        self.ai_tanks = []
-        self.font = assets.font(size=36)
-        self.bigfont = assets.font(size=72)
+        # init fonts
+        self.font = get_font(36)
+        self.bigfont = get_font(72)
         self.running = False
 
     def add_button(self, button, on_click=None):
@@ -44,7 +53,7 @@ class Game:
 
     def load(self):
         utils.play_default_theme()
-        self.sounds['click'] = assets.sound(settings.DEFAULT_CLICK_SOUND)
+        self.sounds['click'] = get_click_sound()
         walls_group, pits_group, player_pos, ai_pos, _ = get_level(
             settings.BASE_DIR, -1)
         self.walls = walls_group
@@ -53,7 +62,7 @@ class Game:
         self.ai_tanks = [load_ai(name, pos, target=player_pos)
                          for name, pos in ai_pos]
 
-        self.title = self.bigfont.render('TANK GAME', color=(30, 30, 30))
+        self.title = self.bigfont.render('TANK GAME', 1, (30, 30, 30))
         self.titlepos = self.title.get_rect(centerx=512, centery=100)
 
         self.buttons = []
@@ -73,7 +82,6 @@ class Game:
                 return
             utils.play_default_theme(force=True)
             pygame.display.set_caption(settings.GAME_NAME)
-
         self.add_button(
             utils.Button("Start Game", self.font, 512, 200, (200, 0, 0)),
             start_game)
@@ -84,7 +92,6 @@ class Game:
                 self.stop()
             else:
                 pygame.display.set_caption(settings.GAME_NAME)
-
         self.add_button(
             utils.Button("Level Selection", self.font, 512, 300, (200, 0, 0)),
             select_level)
@@ -94,7 +101,6 @@ class Game:
                 self.click()
                 self.stop()
                 level_editor()
-
         self.add_button(
             utils.Button("Level Editor", self.font, 512, 400, (200, 0, 0)),
             editor)
@@ -103,7 +109,6 @@ class Game:
             self.click()
             if not options_menu():
                 return
-
         self.add_button(
             utils.Button("Options", self.font, 512, 500, (200, 0, 0)),
             options)
@@ -111,7 +116,6 @@ class Game:
         def exit_game():
             self.click()
             self.stop()
-
         self.add_button(
             utils.Button("Exit Game", self.font, 512, 600, (200, 0, 0)),
             exit_game)
@@ -134,7 +138,7 @@ class Game:
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for button in self.buttons:
-                    if button.highlighten:
+                    if button.hover:
                         button.on_click()
 
     def update(self):
@@ -156,7 +160,7 @@ class Game:
     def run(self):
         self.load()
         while self.running:
-            self.clock.tick(60)
+            self.clock.tick(self.fps)
             self.update()
             self.events()
 

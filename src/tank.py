@@ -7,7 +7,7 @@ import os
 from src import utils
 from src.bullet_cursor import Bullet
 from . import settings
-from . import assets
+from pygame_assets import load
 
 path = os.getcwd()
 join = os.path.join
@@ -27,7 +27,7 @@ class Body(pygame.sprite.Sprite):
 
     def __init__(self, image_name, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = assets.image_with_rect(image_name)
+        self.image, self.rect = load.image_with_rect(image_name)
         self.base_image = self.image
         self.area = pygame.display.get_surface().get_rect()
         self.speed = 1
@@ -138,7 +138,7 @@ class Canon(pygame.sprite.Sprite):
 
     def __init__(self, image_name, pos, target_pos=None):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = assets.image_with_rect(image_name)
+        self.image, self.rect = load.image_with_rect(image_name)
         self.base_image = self.image
         self.rect.center = pos
         self.angle = math.radians(-90)
@@ -185,7 +185,7 @@ class Tank:
     def __init__(self, pos, target_pos=None):
         self.body = Body(self.body_image_name, pos)
         self.canon = Canon(self.canon_image_name, pos, target_pos)
-        self.fire_sound = assets.sound(self.fire_sound_name)
+        self.fire_sound = load.sound(self.fire_sound_name)
         self.bullets = pygame.sprite.Group()
         self.alive = True
 
@@ -249,7 +249,7 @@ class Tank:
             self.body.stop()
 
     def update(self, path, target_pos, bullets_group, walls_group=None):
-        destroyedSound = assets.sound("destroyed_sound.wav")
+        destroyedSound = load.sound("destroyed_sound.wav")
         v = utils.get_volume('fx')
         destroyedSound.set_volume(v)
         if self.alive:

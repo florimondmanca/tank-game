@@ -2,9 +2,9 @@
 
 # Imports
 
-import pygame
 import os
-from . import assets
+import pygame
+from pygame_assets import load
 join = os.path.join
 
 
@@ -17,7 +17,7 @@ class Wall(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(32 * j, 32 * i, 32, 32)
         self.pos = (j, i)
-        self.image = assets.image(name)
+        self.image = load.image(name)
 
 
 class Pit(Wall):
