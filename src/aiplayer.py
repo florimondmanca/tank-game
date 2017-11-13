@@ -168,19 +168,15 @@ class BlueAI(YellowAI):
                 self.body.stopvertical()  # always move on x first.
                 if self_x < goal_x - v:
                     self.body.moveright()
-                    self.body.goal_angle = 0
                 elif self_x > goal_x + v:
                     self.body.moveleft()
-                    self.body.goal_angle = 180
                 else:
                     self.body.stophorizontal()
                     # on bouge ensuite en ordonnée
                     if self_y < goal_y - v:
                         self.body.movedown()
-                        self.body.goal_angle = -90
                     elif self_y > goal_y + v:
                         self.body.moveup()
-                        self.body.goal_angle = 90
             else:
                 # we arrived at the goal point, go to the next.
                 self.step += 1
@@ -338,18 +334,14 @@ class RedAI(YellowAI):
             self.body.stopvertical()  # always move on x first.
             if self_x < goal_x - v:
                 self.body.moveright()
-                self.body.goal_angle = 0
             elif self_x > goal_x + v:
                 self.body.moveleft()
-                self.body.goal_angle = 180
             else:
                 self.body.stophorizontal()  # on bouge ensuite en ordonnée
                 if self_y < goal_y - v:
                     self.body.movedown()
-                    self.body.goal_angle = -90
                 elif self_y > goal_y + v:
                     self.body.moveup()
-                    self.body.goal_angle = 90
 
         # on est arrivé au point. On se rend donc au point suivant
         else:

@@ -46,12 +46,12 @@ class Body(pygame.sprite.Sprite):
 
         Let α be the body's current angle, and γ the goal angle.
         Compute δ = (γ - α)
-        Transform δ = (δ % 360)
+        Transform δ = (δ % 360) ... # TODO
         """
         # TODO refactor
         alpha, beta = round(math.degrees(self.angle)), self.goal_angle
         delta = beta - alpha
-        if delta > 180:  # gère les cas particuliers
+        if delta > 180:  # special cases
             delta = delta - 360
         if delta < -180:
             delta = delta + 360
@@ -101,15 +101,19 @@ class Body(pygame.sprite.Sprite):
 
     def moveright(self):
         self.move_x = self.speed
+        self.goal_angle = 0
 
     def moveleft(self):
         self.move_x = -self.speed
+        self.goal_angle = 180
 
     def moveup(self):
         self.move_y = -self.speed
+        self.goal_angle = 90
 
     def movedown(self):
         self.move_y = self.speed
+        self.goal_angle = -90
 
     def stophorizontal(self):
         self.move_x = 0
